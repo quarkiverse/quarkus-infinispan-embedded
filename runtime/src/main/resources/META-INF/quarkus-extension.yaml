@@ -1,0 +1,8 @@
+---
+name: "Infinispan Embedded - In application data grid"
+metadata:
+  status: "preview"
+  keywords:
+  - "infinispan"
+  categories:
+  - "data"
