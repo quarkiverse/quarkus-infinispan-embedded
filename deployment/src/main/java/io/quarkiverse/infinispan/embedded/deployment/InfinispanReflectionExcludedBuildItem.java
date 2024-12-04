@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded.deployment;
+package io.quarkiverse.infinispan.embedded.deployment;
 
 import org.jboss.jandex.DotName;
 

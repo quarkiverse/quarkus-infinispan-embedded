@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded.deployment;
+package io.quarkiverse.infinispan.embedded.deployment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +21,6 @@ import org.infinispan.interceptors.AsyncInterceptor;
 import org.infinispan.notifications.Listener;
 import org.infinispan.persistence.spi.CacheWriter;
 import org.infinispan.persistence.spi.NonBlockingStore;
-import org.infinispan.quarkus.embedded.runtime.InfinispanEmbeddedProducer;
-import org.infinispan.quarkus.embedded.runtime.InfinispanEmbeddedRuntimeConfig;
-import org.infinispan.quarkus.embedded.runtime.InfinispanRecorder;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -33,6 +30,9 @@ import org.jboss.jandex.IndexView;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
 
+import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
+import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedRuntimeConfig;
+import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;

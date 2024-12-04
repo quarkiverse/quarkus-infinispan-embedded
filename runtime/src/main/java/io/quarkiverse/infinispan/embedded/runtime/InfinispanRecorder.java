@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded.runtime;
+package io.quarkiverse.infinispan.embedded.runtime;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.runtime.annotations.Recorder;

@@ -1,8 +1,11 @@
 ---
-name: "Infinispan Embedded - In application data grid"
+name: "Infinispan Embedded - Library mode"
 metadata:
   status: "preview"
   keywords:
   - "infinispan"
+  - "embedded"
+  - "library"
   categories:
   - "data"
+  - "caching"

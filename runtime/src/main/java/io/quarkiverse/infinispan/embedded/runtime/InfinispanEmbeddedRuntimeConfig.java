@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded.runtime;
+package io.quarkiverse.infinispan.embedded.runtime;
 
 import java.util.Optional;
 
@@ -17,4 +17,6 @@ public interface InfinispanEmbeddedRuntimeConfig {
      * The configured Infinispan embedded xml file which is used by the managed EmbeddedCacheManager and its Caches
      */
     Optional<String> xmlConfig();
+
+    Optional<Boolean> clustered();
 }

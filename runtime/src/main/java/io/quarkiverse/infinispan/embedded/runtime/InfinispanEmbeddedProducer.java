@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded.runtime;
+package io.quarkiverse.infinispan.embedded.runtime;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +18,14 @@ import org.infinispan.commons.util.FileLookupFactory;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.cache.TransactionConfiguration;
 import org.infinispan.configuration.cache.TransactionConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.configuration.parsing.ParserRegistry;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup;
+
+import io.quarkus.logging.Log;
 
 @ApplicationScoped
 public class InfinispanEmbeddedProducer {
@@ -49,10 +52,15 @@ public class InfinispanEmbeddedProducer {
                 }
                 return new DefaultCacheManager(configHolder, true);
             } catch (IOException e) {
+                Log.error(e);
                 throw new RuntimeException(e);
             }
         }
-        return new DefaultCacheManager();
+
+        if (config.clustered().isPresent()) {
+
+        }
+        return new DefaultCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder().build());
     }
 
     /**
