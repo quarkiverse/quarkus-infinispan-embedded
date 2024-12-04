@@ -57,9 +57,6 @@ public class InfinispanEmbeddedProducer {
             }
         }
 
-        if (config.clustered().isPresent()) {
-
-        }
         return new DefaultCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder().build());
     }
 

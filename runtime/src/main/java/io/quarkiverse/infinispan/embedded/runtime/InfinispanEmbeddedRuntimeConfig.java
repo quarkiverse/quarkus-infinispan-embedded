@@ -15,5 +15,4 @@ public interface InfinispanEmbeddedRuntimeConfig {
      */
     Optional<String> xmlConfig();
 
-    Optional<Boolean> clustered();
 }
