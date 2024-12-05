@@ -18,6 +18,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.quarkiverse.antora</groupId>
+            <artifactId>quarkus-antora</artifactId>
+            <version>${quarkus-antora.version}</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>

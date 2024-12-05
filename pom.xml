@@ -26,6 +26,7 @@
     </scm>
     <properties>
         <quarkus.version>3.15.2</quarkus.version>
+        <quarkus-antora.version>0.3.0</quarkus-antora.version>
         <infinispan.version>15.0.11.Final</infinispan.version>
         <jgroups.raft.version>1.0.14.Final</jgroups.raft.version>
         <assertj.version>3.26.3</assertj.version>

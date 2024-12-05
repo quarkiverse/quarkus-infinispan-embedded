@@ -1,8 +1,5 @@
 package io.quarkiverse.infinispan.embedded.docs.it;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 

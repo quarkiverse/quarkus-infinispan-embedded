@@ -30,3 +30,7 @@ include::{examples-dir}/io/quarkiverse/infinispan/embedded/samples/MyServiceExam
 ----
 <1> The `@Inject` annotation injects the _EmbeddedCacheManager_.
 <2> Use the _EmbeddedCacheManager_. Scope if the bean is _@Singleton_
+
+== Configuration Settings
+
+include::includes/quarkus-infinispan-embedded.adoc[leveloffset=+1,opts=optional]

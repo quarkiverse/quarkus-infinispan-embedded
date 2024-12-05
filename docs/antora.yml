@@ -1,0 +1,5 @@
+name: quarkus-infinispan-embedded
+title: Infinispan Embedded
+version: dev
+nav:
+  - modules/ROOT/nav.adoc
