@@ -65,7 +65,3 @@ release.properties
 
 # Quarkus CLI
 .quarkus
-
-#Dolphin
-.directory
-/samples/chatbot/dev.sh
