@@ -8,7 +8,7 @@ Refer to the comprehensive [documentation](https://docs.quarkiverse.io/quarkus-i
 
 ## Samples
 
-Check out the [samples](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/samples).
+Check out the [samples](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/sample).
 
 ## Getting Started
 
