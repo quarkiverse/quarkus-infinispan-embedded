@@ -14,14 +14,14 @@ import io.restassured.http.ContentType;
 public class AntoraTest {
 
     @Test
-    public void antoraSite() throws TimeoutException, IOException, InterruptedException {
+    public void antoraSite() {
         RestAssured
                 .given()
                 .contentType(ContentType.HTML)
                 .get("/quarkus-infinispan-embedded/dev/index.html")
                 .then()
                 .statusCode(200)
-                .body(CoreMatchers.containsString("<h1 class=\"page\">Quarkus LangChain4j</h1>"));
+                .body(CoreMatchers.containsString("<h1 class=\"page\">Quarkus Infinispan Embedded</h1>"));
     }
 
 }
