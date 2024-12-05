@@ -32,7 +32,7 @@ public class InfinispanGreetingResource {
         Log.info("Create mycache with config " + config);
         cacheManager.administration()
                 .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
-                .createCache(CACHE_NAME, config);
+                .getOrCreateCache(CACHE_NAME, config);
     }
 
     @POST

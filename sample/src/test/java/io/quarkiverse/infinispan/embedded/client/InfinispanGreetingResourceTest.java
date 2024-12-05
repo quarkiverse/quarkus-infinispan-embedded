@@ -15,7 +15,7 @@ class InfinispanGreetingResourceTest {
     public void testHelloEndpoint() {
         given()
                 .contentType(ContentType.JSON)
-                .body("{\"name\":\"Infinispan Client\",\"message\":\"Hello World, Infinispan is up!\"}")
+                .body("{\"name\":\"Infinispan Embedded\",\"message\":\"Hello World, Service with Infinispan Embedded is up!\"}")
                 .when()
                 .post("/greeting/quarkus")
                 .then()
@@ -25,6 +25,7 @@ class InfinispanGreetingResourceTest {
                 .when().get("/greeting/quarkus")
                 .then()
                 .statusCode(200)
-                .body(is("{\"name\":\"Infinispan Client\",\"message\":\"Hello World, Infinispan is up!\"}"));
+                .body(is(
+                        "{\"name\":\"Infinispan Embedded\",\"message\":\"Hello World, Service with Infinispan Embedded is up!\"}"));
     }
 }
