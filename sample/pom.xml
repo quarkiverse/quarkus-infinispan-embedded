@@ -87,8 +87,6 @@
             </plugin>
         </plugins>
     </build>
-
-
     <profiles>
         <profile>
             <id>native</id>
@@ -104,6 +102,7 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${surefire-plugin.version}</version>
                         <executions>
