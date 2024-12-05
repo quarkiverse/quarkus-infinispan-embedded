@@ -1,0 +1,32 @@
+= Quarkus Infinispan Embedded
+
+include::./includes/attributes.adoc[]
+
+The new *Infinispan Embedded Quarkus extension* simplifies using Infinispan as an embedded data grid or cache in Quarkus applications.
+
+- **Embedded Infinispan**: Run Infinispan in the same process as your application, eliminating the need for a standalone server.
+- **Seamless Quarkus Integration**: Optimized for Quarkus, providing fast startup, low memory footprint, and simplified configuration.
+- **Flexible Caching and Data Grid Capabilities**: Easily store and manage data in-memory for high performance and scalability.
+
+This extension is ideal for developers who want to build high-speed, lightweight applications without the overhead of managing external data services.
+
+
+== Quick Overview
+
+To incorporate Quarkus Infinispan Embedded into your Quarkus project, add the following Maven dependency:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.quarkiverse.infinispan</groupId>
+    <artifactId>quarkus-infinispan-embedded</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+[source,java]
+----
+include::{examples-dir}/io/quarkiverse/infinispan/embedded/samples/MyServiceExample.java[]
+----
+<1> The `@Inject` annotation injects the _EmbeddedCacheManager_.
+<2> Use the _EmbeddedCacheManager_. Scope if the bean is _@Singleton_

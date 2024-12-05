@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.sample;
+package io.quarkiverse.infinispan.embedded.samples;
 
 import jakarta.inject.Inject;
 
@@ -14,18 +14,18 @@ import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
 @QuarkusMain
-public class MyService implements QuarkusApplication {
+public class MyServiceExample implements QuarkusApplication {
 
     @Inject
-    private EmbeddedCacheManager cacheManager;
+    private EmbeddedCacheManager cacheManager; //<1>
 
     @Override
     public int run(String... args) {
         Configuration config = new ConfigurationBuilder()
                 .clustering().cacheMode(CacheMode.DIST_ASYNC).build();
-        Log.info(cacheManager.administration()
+        Log.info(cacheManager.administration() //<2>
                 .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
-                .createCache("mycache", config));
+                .getOrCreateCache("mycache", config));
         Cache<String, String> mycache = cacheManager.getCache("mycache");
         mycache.put("greeting", "Hello world!");
         Log.info(mycache.get("greeting"));
