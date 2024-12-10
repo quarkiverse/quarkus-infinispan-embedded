@@ -57,7 +57,11 @@ public class InfinispanEmbeddedProducer {
             }
         }
 
-        return new DefaultCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder().build());
+        if (config.clustered()) {
+            return new DefaultCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder().build());
+        }
+
+        return new DefaultCacheManager();
     }
 
     /**
