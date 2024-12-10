@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.client;
+package io.quarkiverse.infinispan.embedded.sample;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;

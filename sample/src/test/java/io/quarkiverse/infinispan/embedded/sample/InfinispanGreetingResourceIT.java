@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.client;
+package io.quarkiverse.infinispan.embedded.sample;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
