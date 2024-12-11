@@ -8,12 +8,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>quarkus-infinispan-embedded-extension-parent</artifactId>
-    <name>Quarkus Infinispan Embedded :: Extension Parent</name>
+    <name>Quarkus - Infinispan - Embedded :: Extension Parent</name>
     <packaging>pom</packaging>
 
     <modules>
         <module>deployment</module>
         <module>runtime</module>
     </modules>
-    
+
 </project>
