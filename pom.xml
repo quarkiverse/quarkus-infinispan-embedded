@@ -10,12 +10,9 @@
     <artifactId>quarkus-infinispan-embedded-parent</artifactId>
     <version>999-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Quarkus Infinispan Embedded - Parent</name>
+    <name>Quarkus - Infinispan - Embedded :: Parent</name>
     <modules>
         <module>extension</module>
-        <module>integration-tests</module>
-        <module>sample</module>
-        <module>docs</module>
     </modules>
     <scm>
         <connection>scm:git:git@github.com:quarkiverse/quarkus-infinispan-embedded.git</connection>
@@ -119,6 +116,7 @@
                 </property>
             </activation>
             <modules>
+                <module>integration-tests</module>
                 <module>sample</module>
             </modules>
         </profile>
