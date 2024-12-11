@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "karesti",
+      "name": "Katia Aresti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/233499?v=4",
+      "profile": "https://github.com/karesti",
+      "contributions": [
+        "code",
+        "maintenance"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "quarkus-infinispan-embedded",
+  "projectOwner": "quarkiverse"
+}
