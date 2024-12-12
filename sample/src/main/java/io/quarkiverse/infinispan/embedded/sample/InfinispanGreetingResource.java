@@ -13,6 +13,7 @@ import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.health.ClusterHealth;
 import org.infinispan.manager.EmbeddedCacheManager;
 
 import io.quarkus.logging.Log;
@@ -35,6 +36,11 @@ public class InfinispanGreetingResource {
         cacheManager.administration()
                 .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
                 .getOrCreateCache(CACHE_NAME, config);
+    }
+
+    @GET
+    public ClusterHealth clusterHealth() {
+        return cacheManager.getHealth().getClusterHealth();
     }
 
     @POST
