@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path;
 
 import org.infinispan.Cache;
 import org.infinispan.commons.api.CacheContainerAdmin;
+import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -28,6 +29,7 @@ public class InfinispanGreetingResource {
     @Startup
     void init() {
         Configuration config = new ConfigurationBuilder()
+                .encoding().mediaType(MediaType.APPLICATION_PROTOSTREAM)
                 .clustering().cacheMode(CacheMode.DIST_ASYNC).build();
         Log.info("Create mycache with config " + config);
         cacheManager.administration()

@@ -1,3 +1,3 @@
 :project-version: 1.0.0
-:infinispan-version: 15.0.8.Final
+:infinispan-version: 15.0.11.Final
 :examples-dir: ./../examples/

@@ -1,5 +1,6 @@
 package org.infinispan.quarkus.embedded;
 
+import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.is;
 
@@ -9,12 +10,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.hamcrest.CoreMatchers;
 import org.infinispan.commons.util.Util;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 
 /**
  * @author William Burns
@@ -100,5 +103,26 @@ public class InfinispanEmbeddedFunctionalityTest {
     public void testSimpleCluster() {
         Log.info("Running cluster test");
         when().get("/test/CLUSTER").then().body(is("Success"));
+    }
+
+    @Test
+    public void testProtostreamCache() {
+        Log.info("Protostream marshalling class");
+        given()
+                .contentType(ContentType.JSON)
+                .body("{\"name\":\"Infinispan Book\",\"author\":\"Jack Nicholson\"}")
+                .when()
+                .post("/test/PROTO/POST/books/123")
+                .then()
+                .statusCode(200)
+                .body(CoreMatchers.is("123"));
+
+        given()
+                .when().get("/test/PROTO/GET/books/123")
+                .then()
+                .statusCode(200)
+                .body(CoreMatchers.is(
+                        "{\"name\":\"Infinispan Book\",\"author\":\"Jack Nicholson\"}"));
+
     }
 }

@@ -1,5 +1,7 @@
 package org.infinispan.quarkus.embedded;
 
+import static org.infinispan.commons.dataconversion.MediaType.APPLICATION_PROTOSTREAM;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -17,6 +20,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 import org.infinispan.Cache;
+import org.infinispan.commons.api.CacheContainerAdmin;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
@@ -116,5 +120,30 @@ public class TestServlet {
             managers.forEach(EmbeddedCacheManager::stop);
         }
         return "Success";
+    }
+
+    @Path("PROTO/GET/books/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Book get(@PathParam("id") String id) {
+        Cache<String, Book> books = emc.administration()
+                .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
+                .getOrCreateCache("books", new ConfigurationBuilder()
+                        .encoding().mediaType(APPLICATION_PROTOSTREAM)
+                        .build());
+        return books.get(id);
+    }
+
+    @Path("PROTO/POST/books/{id}")
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    public String create(@PathParam("id") String id, Book book) {
+        Cache<String, Book> books = emc.administration()
+                .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
+                .getOrCreateCache("books", new ConfigurationBuilder()
+                        .encoding().mediaType(APPLICATION_PROTOSTREAM)
+                        .build());
+        books.put(id, book);
+        return id;
     }
 }

@@ -35,6 +35,12 @@
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-core-graalvm</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.graalvm.sdk</groupId>
+                    <artifactId>graal-sdk</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jgroups</groupId>
@@ -80,7 +86,7 @@
         </dependency>
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
-            <artifactId>graal-sdk</artifactId>
+            <artifactId>nativeimage</artifactId>
         </dependency>
         <!-- We need to make these dependencies non-optional in order to have the native compilation working -->
         <dependency>
