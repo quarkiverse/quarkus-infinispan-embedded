@@ -17,10 +17,19 @@ import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.configuration.parsing.ConfigurationParser;
 import org.infinispan.configuration.serializing.ConfigurationSerializer;
 import org.infinispan.factories.impl.ModuleMetadataBuilder;
+import org.infinispan.health.CacheHealth;
+import org.infinispan.health.ClusterHealth;
 import org.infinispan.interceptors.AsyncInterceptor;
 import org.infinispan.notifications.Listener;
 import org.infinispan.persistence.spi.CacheWriter;
 import org.infinispan.persistence.spi.NonBlockingStore;
+import org.infinispan.protostream.BaseMarshaller;
+import org.infinispan.protostream.EnumMarshaller;
+import org.infinispan.protostream.FileDescriptorSource;
+import org.infinispan.protostream.GeneratedSchema;
+import org.infinispan.protostream.MessageMarshaller;
+import org.infinispan.protostream.SerializationContextInitializer;
+import org.infinispan.protostream.schema.Schema;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -34,6 +43,7 @@ import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedRuntimeConfig;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -58,6 +68,7 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     void addInfinispanDependencies(BuildProducer<IndexDependencyBuildItem> indexDependency) {
         indexDependency.produce(new IndexDependencyBuildItem("org.jgroups", "jgroups"));
+        indexDependency.produce(new IndexDependencyBuildItem("org.jgroups", "jgroups-raft"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-commons"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-core"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-jdbc-common"));
@@ -84,6 +95,25 @@ class InfinispanEmbeddedProcessor {
                         .produce(new ServiceProviderBuildItem(serviceLoadedInterface.getName(), interfaceImplementations));
             }
         }
+
+        // Protostream
+        Index index = applicationIndexBuildItem.getIndex();
+        Collection<ClassInfo> initializerClasses = index.getAllKnownImplementors(DotName.createSimple(
+                SerializationContextInitializer.class.getName()));
+        initializerClasses
+                .addAll(index.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
+        Set<String> initializers = new HashSet<>(initializerClasses.size());
+        for (ClassInfo ci : initializerClasses) {
+            Class<?> initializerClass = null;
+            try {
+                initializerClass = Thread.currentThread().getContextClassLoader().loadClass(ci.toString());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            initializers.add(initializerClass.getName());
+        }
+        serviceProvider
+                .produce(new ServiceProviderBuildItem(SerializationContextInitializer.class.getName(), initializers));
 
         Set<DotName> excludedClasses = new HashSet<>();
         excludedReflectionClasses.forEach(excludedBuildItem -> {
@@ -124,6 +154,8 @@ class InfinispanEmbeddedProcessor {
         // Due to the index not containing AbstractExternalizer it doesn't know that it implements AdvancedExternalizer
         // thus we also have to include classes that extend AbstractExternalizer
         addReflectionForClass(AbstractExternalizer.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
+        addReflectionForClass(CacheHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
+        addReflectionForClass(ClusterHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
 
         // Add optional SQL classes. These will only be included if the optional jars are present on the classpath and indexed by Jandex.
         addReflectionForName("org.infinispan.persistence.jdbc.common.configuration.ConnectionFactoryConfiguration", true,
@@ -178,6 +210,12 @@ class InfinispanEmbeddedProcessor {
                             .fields(fields)
                             .build());
         }
+    }
+
+    @BuildStep
+    UnremovableBeanBuildItem ensureBeanLookupAvailable() {
+        return UnremovableBeanBuildItem.beanTypes(BaseMarshaller.class, EnumMarshaller.class, MessageMarshaller.class,
+                FileDescriptorSource.class, Schema.class, SerializationContextInitializer.class);
     }
 
     @Record(ExecutionTime.RUNTIME_INIT)

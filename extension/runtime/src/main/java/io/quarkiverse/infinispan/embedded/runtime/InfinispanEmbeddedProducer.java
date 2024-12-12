@@ -53,7 +53,8 @@ public class InfinispanEmbeddedProducer {
                 return new DefaultCacheManager(configHolder, true);
             } catch (IOException e) {
                 Log.error(e);
-                throw new RuntimeException(e);
+                throw new InfinispanEmbeddedException(
+                        String.format("Unable to create the EmbeddedCacheManager with the xmlConfig %s", configurationFile), e);
             }
         }
 

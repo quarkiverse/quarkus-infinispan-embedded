@@ -11,7 +11,7 @@ Refer to the comprehensive [documentation](https://docs.quarkiverse.io/quarkus-i
 
 ## Samples
 
-Check out the [samples](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/sample).
+Check out the [sample](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/sample).
 
 ## Getting Started
 
@@ -34,8 +34,6 @@ Feel free to contribute to this project by submitting issues or pull requests.
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 
-
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -46,6 +44,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wburns"><img src="https://avatars.githubusercontent.com/u/648175?v=4?s=100" width="100px;" alt="Will Burns"/><br /><sub><b>Will Burns</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-infinispan-embedded/commits?author=wburns" title="Code">💻</a> <a href="#maintenance-wburns" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ryanemerson"><img src="https://avatars.githubusercontent.com/u/765332?v=4?s=100" width="100px;" alt="Ryan Emerson"/><br /><sub><b>Ryan Emerson</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-infinispan-embedded/commits?author=ryanemerson" title="Code">💻</a> <a href="#maintenance-ryanemerson" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/karesti"><img src="https://avatars.githubusercontent.com/u/233499?v=4?s=100" width="100px;" alt="Katia Aresti"/><br /><sub><b>Katia Aresti</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-infinispan-embedded/commits?author=karesti" title="Code">💻</a> <a href="#maintenance-karesti" title="Maintenance">🚧</a></td>
     </tr>
   </tbody>
