@@ -1,7 +1,10 @@
 # Quarkus Infinispan Embedded
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.infinispan/quarkus-infinispan-embedded?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.infinispan/quarkus-infinispan-embedded)
+[![License](https://img.shields.io/github/license/infinispan/infinispan?style=for-the-badge&logo=apache)](https://www.apache.org/licenses/LICENSE-2.0)
+![Supported JVM Versions](https://img.shields.io/badge/JVM-17--23-brightgreen.svg?style=for-the-badge&logo=openjdk)
+[![Project Chat](https://img.shields.io/badge/zulip-join_chat-pink.svg?style=for-the-badge&logo=zulip)](https://infinispan.zulipchat.com/)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=for-the-badge&logo=github)](#contributors-)
 
 This repository contains Quarkus extensions that facilitate seamless integration between Quarkus and [Infinispan Embedded](https://infinispan.org/) (library mode).
 
