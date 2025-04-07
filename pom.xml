@@ -21,9 +21,9 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
-        <quarkus.version>3.15.2</quarkus.version>
-        <quarkus-antora.version>0.3.0</quarkus-antora.version>
-        <infinispan.version>15.0.11.Final</infinispan.version>
+        <quarkus.version>3.20.0</quarkus.version>
+        <quarkus-antora.version>1.2.0</quarkus-antora.version>
+        <infinispan.version>15.0.14.Final</infinispan.version>
         <jgroups.raft.version>1.0.14.Final</jgroups.raft.version>
         <assertj.version>3.26.3</assertj.version>
     </properties>
@@ -37,16 +37,16 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.infinispan</groupId>
-                <artifactId>infinispan-bom</artifactId>
-                <version>${infinispan.version}</version>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bom</artifactId>
-                <version>${quarkus.version}</version>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-bom</artifactId>
+                <version>${infinispan.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
