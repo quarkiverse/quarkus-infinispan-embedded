@@ -25,28 +25,25 @@ import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
-import org.infinispan.util.logging.Log;
-import org.infinispan.util.logging.LogFactory;
 
+import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 
 @Path("/test")
 public class TestServlet {
-    private static final Log log = LogFactory.getLog(TestServlet.class);
-
     @Inject
     EmbeddedCacheManager emc;
 
     // Having on start method will eagerly initialize the cache manager which in turn starts up clustered cache
     void onStart(@Observes StartupEvent ev) {
-        log.info("The application is starting...");
+        Log.info("The application is starting...");
     }
 
     @Path("GET/{cacheName}/{id}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String get(@PathParam("cacheName") String cacheName, @PathParam("id") String id) {
-        log.info("Retrieving " + id + " from " + cacheName);
+        Log.info("Retrieving " + id + " from " + cacheName);
         Cache<byte[], byte[]> cache = emc.getCache(cacheName);
         byte[] result = cache.get(id.getBytes(StandardCharsets.UTF_8));
         return result == null ? "null" : new String(result, StandardCharsets.UTF_8);
@@ -58,7 +55,7 @@ public class TestServlet {
     @Produces(MediaType.TEXT_PLAIN)
     public String put(@PathParam("cacheName") String cacheName, @PathParam("id") String id, @PathParam("value") String value,
             @QueryParam("shouldFail") String shouldFail) {
-        log.info("Putting " + id + " with value: " + value + " into " + cacheName);
+        Log.info("Putting " + id + " with value: " + value + " into " + cacheName);
         Cache<byte[], byte[]> cache = emc.getCache(cacheName);
         byte[] result = cache.put(id.getBytes(StandardCharsets.UTF_8), value.getBytes(StandardCharsets.UTF_8));
         if (Boolean.parseBoolean(shouldFail)) {
@@ -71,7 +68,7 @@ public class TestServlet {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String remove(@PathParam("cacheName") String cacheName, @PathParam("id") String id) {
-        log.info("Removing " + id + " from " + cacheName);
+        Log.info("Removing " + id + " from " + cacheName);
         Cache<byte[], byte[]> cache = emc.getCache(cacheName);
         byte[] result = cache.remove(id.getBytes(StandardCharsets.UTF_8));
         return result == null ? "null" : new String(result, StandardCharsets.UTF_8);

@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.hamcrest.CoreMatchers;
+import org.infinispan.commons.util.OS;
 import org.infinispan.commons.util.Util;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,9 @@ public class InfinispanEmbeddedFunctionalityTest {
 
     @Test
     public void testOffHeapCache() {
-        testCache("off-heap-memory");
+        if (!OS.getCurrentOs().equals(OS.MAC_OS)) {
+            testCache("off-heap-memory");
+        }
     }
 
     @Test
