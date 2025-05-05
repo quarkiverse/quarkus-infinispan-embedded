@@ -116,7 +116,9 @@
             </activation>
             <modules>
                 <module>integration-tests</module>
-                <module>sample</module>
+                <module>samples/sample</module>
+                <module>samples/cache-sample</module>
+                <module>samples/persisted-cache-sample</module>
             </modules>
         </profile>
         <profile>

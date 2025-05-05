@@ -1,5 +1,8 @@
 package io.quarkiverse.infinispan.embedded.deployment;
 
+import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,7 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Default;
+
+import org.infinispan.AdvancedCache;
 import org.infinispan.commons.marshall.AbstractExternalizer;
 import org.infinispan.commons.marshall.AdvancedExternalizer;
 import org.infinispan.configuration.cache.AbstractModuleConfigurationBuilder;
@@ -20,6 +28,7 @@ import org.infinispan.factories.impl.ModuleMetadataBuilder;
 import org.infinispan.health.CacheHealth;
 import org.infinispan.health.ClusterHealth;
 import org.infinispan.interceptors.AsyncInterceptor;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.Listener;
 import org.infinispan.persistence.spi.CacheWriter;
 import org.infinispan.persistence.spi.NonBlockingStore;
@@ -36,14 +45,22 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Type;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
 
+import io.quarkiverse.infinispan.embedded.Embedded;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedRuntimeConfig;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
+import io.quarkus.arc.deployment.BeanDiscoveryFinishedBuildItem;
+import io.quarkus.arc.deployment.BeanRegistrationPhaseBuildItem;
+import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
+import io.quarkus.cache.CompositeCacheKey;
+import io.quarkus.cache.deployment.spi.CacheManagerInfoBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -58,6 +75,7 @@ import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 
 class InfinispanEmbeddedProcessor {
 
+    private static final DotName INFINISPAN_EMBEDDED_ANNOTATION = DotName.createSimple(Embedded.class.getName());
     private static final String FEATURE = "infinispan-embedded";
 
     @BuildStep
@@ -77,13 +95,14 @@ class InfinispanEmbeddedProcessor {
     }
 
     @BuildStep
-    void setup(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+    ProtobufInitializers setup(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<ServiceProviderBuildItem> serviceProvider, BuildProducer<AdditionalBeanBuildItem> additionalBeans,
             BuildProducer<NativeImageResourceBuildItem> resources, CombinedIndexBuildItem combinedIndexBuildItem,
             List<InfinispanReflectionExcludedBuildItem> excludedReflectionClasses,
             ApplicationIndexBuildItem applicationIndexBuildItem) {
 
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(InfinispanEmbeddedProducer.class));
+        additionalBeans.produce(AdditionalBeanBuildItem.builder().addBeanClass(Embedded.class).build());
 
         for (Class<?> serviceLoadedInterface : Arrays.asList(ModuleMetadataBuilder.class, ConfigurationParser.class)) {
             // Need to register all the modules as service providers so they can be picked up at runtime
@@ -102,18 +121,19 @@ class InfinispanEmbeddedProcessor {
                 SerializationContextInitializer.class.getName()));
         initializerClasses
                 .addAll(index.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
-        Set<String> initializers = new HashSet<>(initializerClasses.size());
+        List<SerializationContextInitializer> initializers = new ArrayList<>(initializerClasses.size());
         for (ClassInfo ci : initializerClasses) {
-            Class<?> initializerClass = null;
             try {
-                initializerClass = Thread.currentThread().getContextClassLoader().loadClass(ci.toString());
-            } catch (ClassNotFoundException e) {
+                Class<?> initializerClass = Thread.currentThread().getContextClassLoader().loadClass(ci.toString());
+                SerializationContextInitializer sci = (SerializationContextInitializer) initializerClass
+                        .getDeclaredConstructor().newInstance();
+                initializers.add(sci);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                    | ClassNotFoundException | NoSuchMethodException e) {
+                // This shouldn't ever be possible as annotation processor should generate empty constructor
                 throw new RuntimeException(e);
             }
-            initializers.add(initializerClass.getName());
         }
-        serviceProvider
-                .produce(new ServiceProviderBuildItem(SerializationContextInitializer.class.getName(), initializers));
 
         Set<DotName> excludedClasses = new HashSet<>();
         excludedReflectionClasses.forEach(excludedBuildItem -> {
@@ -177,6 +197,15 @@ class InfinispanEmbeddedProcessor {
         addReflectionForClass(StoreConfiguration.class, combinedIndex, reflectiveClass, true, excludedClasses);
         addReflectionForClass(ConfigurationSerializer.class, combinedIndex, reflectiveClass, excludedClasses);
         addReflectionForClass(AbstractModuleConfigurationBuilder.class, combinedIndex, reflectiveClass, excludedClasses);
+
+        return new ProtobufInitializers(initializers);
+    }
+
+    @BuildStep
+    @Record(ExecutionTime.STATIC_INIT)
+    BeanContainerListenerBuildItem build(InfinispanRecorder recorder, ProtobufInitializers initializers) {
+        // This is necessary to be done for Protostream Marshaller init in native
+        return new BeanContainerListenerBuildItem(recorder.configureInfinispan(initializers.getInitializers()));
     }
 
     private void addReflectionForClass(Class<?> classToUse, IndexView indexView,
@@ -215,12 +244,80 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     UnremovableBeanBuildItem ensureBeanLookupAvailable() {
         return UnremovableBeanBuildItem.beanTypes(BaseMarshaller.class, EnumMarshaller.class, MessageMarshaller.class,
-                FileDescriptorSource.class, Schema.class, SerializationContextInitializer.class);
+                FileDescriptorSource.class, Schema.class, SerializationContextInitializer.class, EmbeddedCacheManager.class);
+    }
+
+    @BuildStep
+    void nativeImage(BuildProducer<ReflectiveClassBuildItem> producer) {
+        producer.produce(ReflectiveClassBuildItem.builder(CompositeCacheKey.class)
+                .reason(getClass().getName())
+                .methods(true).build());
+    }
+
+    @Record(RUNTIME_INIT)
+    @BuildStep
+    void generateClientBeans(InfinispanRecorder recorder,
+            BeanRegistrationPhaseBuildItem registrationPhase,
+            BeanDiscoveryFinishedBuildItem finishedBuildItem,
+            BeanDiscoveryFinishedBuildItem beans,
+            BuildProducer<SyntheticBeanBuildItem> syntheticBeanBuildItemBuildProducer) {
+
+        syntheticBeanBuildItemBuildProducer.produce(
+                configureAndCreateSyntheticBean(EmbeddedCacheManager.class,
+                        recorder.infinispanEmbeddedSupplier()));
+
+        beans.getInjectionPoints().stream()
+                .filter(ip -> ip.getRequiredQualifier(INFINISPAN_EMBEDDED_ANNOTATION) != null)
+                .map(ip -> {
+                    AnnotationInstance cacheQualifier = ip.getRequiredQualifier(INFINISPAN_EMBEDDED_ANNOTATION);
+                    CacheBean cacheBean = new CacheBean(ip.getType(), cacheQualifier.value().asString());
+                    return cacheBean;
+                }).forEach(cacheBean ->
+                // Produce Cache and AdvancedCache beans
+                syntheticBeanBuildItemBuildProducer.produce(
+                        configureAndCreateSyntheticBean(cacheBean, AdvancedCache.class,
+                                recorder.infinispanAdvancedCacheSupplier(cacheBean.cacheName))));
+    }
+
+    static <T> SyntheticBeanBuildItem configureAndCreateSyntheticBean(Class<T> type,
+            Supplier<T> supplier) {
+
+        SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem
+                .configure(type)
+                .supplier(supplier)
+                .scope(ApplicationScoped.class)
+                .addQualifier(Default.class)
+                .unremovable()
+                .setRuntimeInit();
+        return configurator.done();
+    }
+
+    static <T> SyntheticBeanBuildItem configureAndCreateSyntheticBean(CacheBean cacheBean, Class<?> implClazz,
+            Supplier<T> supplier) {
+        SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem.configure(implClazz)
+                .types(cacheBean.type)
+                .scope(ApplicationScoped.class)
+                .supplier(supplier)
+                .unremovable()
+                .setRuntimeInit();
+        configurator.addQualifier().annotation(INFINISPAN_EMBEDDED_ANNOTATION).addValue("value", cacheBean.cacheName)
+                .done();
+        return configurator.done();
+    }
+
+    record CacheBean(Type type, String cacheName) {
     }
 
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
     void configureRuntimeProperties(InfinispanRecorder recorder, InfinispanEmbeddedRuntimeConfig runtimeConfig) {
         recorder.configureRuntimeProperties(runtimeConfig);
+    }
+
+    @BuildStep
+    @Record(RUNTIME_INIT)
+    CacheManagerInfoBuildItem cacheManagerInfo(BuildProducer<SyntheticBeanBuildItem> syntheticBeanBuildItemBuildProducer,
+            InfinispanRecorder recorder) {
+        return new CacheManagerInfoBuildItem(recorder.getCacheManagerSupplier());
     }
 }

@@ -65,3 +65,4 @@ release.properties
 
 # Quarkus CLI
 .quarkus
+out

@@ -1,0 +1,106 @@
+:summaryTableId: quarkus-infinispan-embedded_quarkus-cache
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[.header-title]##Configuration property##
+h|Type
+h|Default
+
+a| [[quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-lifespan]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-lifespan[`quarkus.cache.infinispan.embedded.lifespan`]##
+
+[.description]
+--
+The default lifespan of the item stored in the cache. This value determines how long the item will be retained in the cache since its creation, regardless of access. If present, this overrides the default lifespan configured in the cache configuration.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_CACHE_INFINISPAN_EMBEDDED_LIFESPAN+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_CACHE_INFINISPAN_EMBEDDED_LIFESPAN+++`
+endif::add-copy-button-to-env-var[]
+--
+|link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html[Duration] link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+|
+
+a| [[quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-max-idle]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-max-idle[`quarkus.cache.infinispan.embedded.max-idle`]##
+
+[.description]
+--
+The default max-idle time of the item stored in the cache. This value determines how long the item can remain idle (not accessed) before it is considered expired. If present, this overrides the default max-idle value configured in the cache configuration. If both max-idle and lifespan are present,max-idle must be less than lifespan.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_CACHE_INFINISPAN_EMBEDDED_MAX_IDLE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_CACHE_INFINISPAN_EMBEDDED_MAX_IDLE+++`
+endif::add-copy-button-to-env-var[]
+--
+|link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html[Duration] link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+|
+
+h|[[quarkus-infinispan-embedded_section_quarkus-cache-infinispan-embedded]] [.section-name.section-level0]##link:#quarkus-infinispan-embedded_section_quarkus-cache-infinispan-embedded[Additional configuration applied to a specific Infinispan cache (highest precedence)]##
+h|Type
+h|Default
+
+a| [[quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-cache-name-lifespan]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-cache-name-lifespan[`quarkus.cache.infinispan.embedded."cache-name".lifespan`]##
+
+[.description]
+--
+The default lifespan of the item stored in the cache. This value determines how long the item will be retained in the cache since its creation, regardless of access. If present, this overrides the default lifespan configured in the cache configuration.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_CACHE_INFINISPAN_EMBEDDED__CACHE_NAME__LIFESPAN+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_CACHE_INFINISPAN_EMBEDDED__CACHE_NAME__LIFESPAN+++`
+endif::add-copy-button-to-env-var[]
+--
+|link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html[Duration] link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+|
+
+a| [[quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-cache-name-max-idle]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-cache-infinispan-embedded-cache-name-max-idle[`quarkus.cache.infinispan.embedded."cache-name".max-idle`]##
+
+[.description]
+--
+The default max-idle time of the item stored in the cache. This value determines how long the item can remain idle (not accessed) before it is considered expired. If present, this overrides the default max-idle value configured in the cache configuration. If both max-idle and lifespan are present,max-idle must be less than lifespan.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_CACHE_INFINISPAN_EMBEDDED__CACHE_NAME__MAX_IDLE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_CACHE_INFINISPAN_EMBEDDED__CACHE_NAME__MAX_IDLE+++`
+endif::add-copy-button-to-env-var[]
+--
+|link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html[Duration] link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+|
+
+
+|===
+
+ifndef::no-duration-note[]
+[NOTE]
+[id=duration-note-anchor-quarkus-infinispan-embedded_quarkus-cache]
+.About the Duration format
+====
+To write duration values, use the standard `java.time.Duration` format.
+See the link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)[Duration#parse() Java API documentation] for more information.
+
+You can also use a simplified format, starting with a number:
+
+* If the value is only a number, it represents time in seconds.
+* If the value is a number followed by `ms`, it represents time in milliseconds.
+
+In other cases, the simplified format is translated to the `java.time.Duration` format for parsing:
+
+* If the value is a number followed by `h`, `m`, or `s`, it is prefixed with `PT`.
+* If the value is a number followed by `d`, it is prefixed with `P`.
+====
+endif::no-duration-note[]
+
+:!summaryTableId:

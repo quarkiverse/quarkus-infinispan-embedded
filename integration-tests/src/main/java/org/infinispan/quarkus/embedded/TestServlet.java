@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import jakarta.enterprise.event.Observes;
@@ -33,6 +34,9 @@ import io.quarkus.runtime.StartupEvent;
 public class TestServlet {
     @Inject
     EmbeddedCacheManager emc;
+
+    @Inject
+    ReviewService reviewService;
 
     // Having on start method will eagerly initialize the cache manager which in turn starts up clustered cache
     void onStart(@Observes StartupEvent ev) {
@@ -142,5 +146,31 @@ public class TestServlet {
                         .build());
         books.put(id, book);
         return id;
+    }
+
+    @Path("ANNOTATIONS/GET/review/{bookId}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String create(@PathParam("bookId") String bookId) {
+        Objects.requireNonNull(bookId);
+        return reviewService.getReview(bookId);
+    }
+
+    @Path("ANNOTATIONS/GET/clear/{bookId}")
+    @GET
+    public void clear(@PathParam("bookId") String bookId) {
+        Objects.requireNonNull(bookId);
+        if (bookId.equals("all")) {
+            reviewService.invalidateAll();
+            return;
+        }
+
+        reviewService.invalidateReview(bookId);
+    }
+
+    @Path("ANNOTATIONS/GET/calls")
+    @GET
+    public int calls() {
+        return reviewService.getCalls();
     }
 }
