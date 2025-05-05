@@ -28,6 +28,10 @@
             <artifactId>quarkus-micrometer-registry-prometheus-deployment</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-cache-deployment</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkiverse.infinispan</groupId>
             <artifactId>quarkus-infinispan-embedded</artifactId>
             <version>${project.version}</version>

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.apache.http.HttpStatus;
 import org.hamcrest.CoreMatchers;
 import org.infinispan.commons.util.OS;
 import org.infinispan.commons.util.Util;
@@ -117,15 +118,43 @@ public class InfinispanEmbeddedFunctionalityTest {
                 .when()
                 .post("/test/PROTO/POST/books/123")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body(CoreMatchers.is("123"));
 
         given()
                 .when().get("/test/PROTO/GET/books/123")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body(CoreMatchers.is(
                         "{\"name\":\"Infinispan Book\",\"author\":\"Jack Nicholson\"}"));
 
+    }
+
+    @Test
+    public void testAnnotationsMethods() {
+        Log.info("Annotations method test");
+        given()
+                .when().get("/test/ANNOTATIONS/GET/review/BOOK-0")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(CoreMatchers.is("Loved it!"));
+
+        given()
+                .when().get("/test/ANNOTATIONS/GET/calls")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(CoreMatchers.is("1"));
+
+        given()
+                .when().get("/test/ANNOTATIONS/GET/review/BOOK-0")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(CoreMatchers.is("Loved it!"));
+
+        given()
+                .when().get("/test/ANNOTATIONS/GET/calls")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(CoreMatchers.is("1"));
     }
 }

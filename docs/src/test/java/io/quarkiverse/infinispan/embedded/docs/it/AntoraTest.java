@@ -1,5 +1,6 @@
 package io.quarkiverse.infinispan.embedded.docs.it;
 
+import org.apache.http.HttpStatus;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ public class AntoraTest {
                 .contentType(ContentType.HTML)
                 .get("/quarkus-infinispan-embedded/dev/index.html")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body(CoreMatchers.containsString("<h1 class=\"page\">Quarkus Infinispan Embedded</h1>"));
     }
 

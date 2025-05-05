@@ -24,12 +24,94 @@ To incorporate Quarkus Infinispan Embedded into your Quarkus project, add the fo
 </dependency>
 ----
 
+== Injecting EmbeddedCacheManager
+
+In your application, you can inject `org.infinispan.manager.EmbeddedCacheManager` to interact completely
+with Infinispan embedded.
+
 [source,java]
 ----
 include::{examples-dir}/io/quarkiverse/infinispan/embedded/samples/MyServiceExample.java[]
 ----
-<1> The `@Inject` annotation injects the _EmbeddedCacheManager_.
-<2> Use the _EmbeddedCacheManager_. Scope if the bean is _@Singleton_
+<1> `@Inject` is used to inject the _EmbeddedCacheManager_ into your bean.
+<2> Use the _EmbeddedCacheManager_. The scope of the bean is _@ApplicationScoped_
+
+== Injecting embedded caches
+
+In your application, you can inject either `org.infinispan.Cache` or `org.infinispan.AdvancedCache`
+to interact with an Infinispan embedded cache instance.
+
+[source,java]
+----
+include::{examples-dir}/io/quarkiverse/infinispan/embedded/samples/CacheInjectionExample.java[]
+----
+<1> `@Inject` is used to inject the cache into your bean.
+<2> The `@Embedded("cache-name")` specifies the cache name. Specifies the name of the cache. If the cache does not exist, it will be created on first access with default configuration (either local or distributed, depending on setup)
+<3> Use the _Cache_. The scope of the bean is _@ApplicationScoped_
+
+== Caching annotations
+
+This extension implements the `QuarkusCache` extension to integrate seamlessly with the Quarkus
+caching. By providing a custom implementation backed by Infinispan's embedded cache, it allows
+developers to leverage Quarkus’s caching annotations (e.g., `@CacheResult`, `@CacheInvalidate`)
+while benefiting from the robustness and flexibility of Infinispan embedded. This ensures compatibility with the broader Quarkus ecosystem and enables
+declarative caching for local or distributed cache scenarios out of the box.
+
+[source,java]
+----
+include::{examples-dir}/io/quarkiverse/infinispan/embedded/samples/WeatherService.java[]
+----
+<1> Declares the class as an `@ApplicationScoped` CDI bean, ensuring a single instance throughout the app.
+<2> Marks the `Weather` record for Protobuf serialization.
+<3> Declares the Protobuf schema, including the `Weather` class and setting the schema package.
+<4> Caches the result of `retrieve()` using the `weather` cache.
+<5> Invalidates all entries in the `weather` cache.
+<6> Invalidates the specific cache entry for a given city.
+
+If the cache does not exist, it will be created on first access with default configuration (either local or distributed, depending on setup)
+
+[NOTE]
+====
+Check the `cache-sample` under the `samples` folder.
+====
+
+== Providing Infinispan Embedded configuration
+To customize the embedded Infinispan cache configuration, use the property `quarkus.infinispan-embedded.xml-config`.
+
+[source,xml]
+----
+include::{examples-dir}/config/caches.xml[]
+----
+<1> Root element for Infinispan configuration.
+<2> Declares a cache container named "default" with statistics enabled.
+<3> Defines a local cache called "todolist".
+<4> Disabled passivation and configures a file-based persistent store.
+
+[source,properties]
+----
+include::{examples-dir}/config/application.properties[]
+----
+<1> Quarkus loads the Infinispan configuration from the specified XML file (caches.xml)
+
+[NOTE]
+====
+Check the `persisted-cache-sample` under the `samples` folder.
+====
+In this example, the local cache will use file persistence to persist the state.
+
+== Default caches configuration
+When no explicit configuration is provided for a cache, Quarkus automatically applies sensible defaults
+based on the context. It defines two built-in configuration names:
+
+* DEFAULT_LOCAL_QUARKUS_CACHE_CONFIGURATION for local caches
+* DEFAULT_CLUSTERED_QUARKUS_CACHE_CONFIGURATION for distributed caches.
+
+These default configurations are registered at runtime and applied on first access
+to any undefined cache. The local configuration uses CacheMode.LOCAL for single-node setups,
+while the clustered configuration uses CacheMode.DIST_SYNC with Protobuf (application/x-protostream)
+as the media type, ensuring compatibility with remote marshalling.
+This approach simplifies development by reducing boilerplate, while still supporting
+custom XML-based configurations when needed.
 
 == Configuration Settings
 

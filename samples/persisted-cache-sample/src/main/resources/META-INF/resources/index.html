@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Fruit REST service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+        var app = angular.module("TodoListManagement", []);
+
+        //Controller Part
+        app.controller("TodoListManagementController", function ($scope, $http) {
+
+            //Initialize page with default data which is blank in this example
+            $scope.todolist = [];
+
+            $scope.form = {
+                title: "",
+                description: "",
+                critical: false
+            };
+
+            //Now load the data from server
+            _refreshPageData();
+
+            //HTTP POST methods for add todo items
+            $scope.add = function () {
+                var data = { "title": $scope.form.title, "description": $scope.form.description, "critical": $scope.form.critical};
+
+                $http({
+                    method: "POST",
+                    url: '/todolist',
+                    data: angular.toJson(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(_success, _error);
+            };
+
+            /* Private Methods */
+            //HTTP GET- get all the items to be done
+            function _refreshPageData() {
+                $http({
+                    method: 'GET',
+                    url: '/todolist'
+                }).then(function successCallback(response) {
+                    $scope.todolist = response.data;
+                }, function errorCallback(response) {
+                    console.log(response.statusText);
+                });
+            }
+
+            function _success(response) {
+                _refreshPageData();
+                _clearForm();
+            }
+
+            function _error(response) {
+                alert(response.data.message || response.statusText);
+            }
+
+            //Clear the form
+            function _clearForm() {
+                $scope.form.title = "";
+                $scope.form.description = "";
+                $scope.form.critical = false;
+            }
+        });
+    </script>
+</head>
+<body ng-app="TodoListManagement" ng-controller="TodoListManagementController">
+
+<div class="container">
+    <h1>REST Service - Todo List</h1>
+
+    <h3>Add a todo item</h3>
+    <form ng-submit="add()">
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Title" ng-model="form.title" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Description" ng-model="form.description" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                Critical <input type="checkbox" placeholder="Critical" ng-model="form.critical" size="60"/>
+            </div>
+        </div>
+        <input type="submit" value="Save"/>
+    </form>
+
+    <h3>Todo List</h3>
+    <div class="row">
+        <div class="col-4">Name</div>
+        <div class="col-7">Description</div>
+        <div class="col-1">Critical</div>
+    </div>
+    <div class="row" ng-repeat="item in todolist">
+        <div class="col-4">{{ item.title }}</div>
+        <div class="col-7">{{ item.description }}</div>
+        <div class="col-1">{{ item.critical }}</div>
+    </div>
+</div>
+
+</body>
+</html>

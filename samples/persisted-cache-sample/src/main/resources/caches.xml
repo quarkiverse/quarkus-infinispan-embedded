@@ -1,0 +1,12 @@
+<infinispan>
+   <cache-container name="default" statistics="true">
+      <local-cache name="todolist">
+         <persistence passivation="false">
+            <file-store shared="false">
+               <data path="target/data"/>
+               <index path="target/index"/>
+            </file-store>
+         </persistence>
+      </local-cache>
+   </cache-container>
+</infinispan>
