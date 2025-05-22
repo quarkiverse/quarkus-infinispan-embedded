@@ -1,7 +1,8 @@
 ---
 name: "Infinispan Embedded - Library mode"
+description: "Infinispan embedded mode is a fast, scalable in-memory cache with advanced features like clustering, query and persistence."
 metadata:
-  status: "preview"
+  status: "stable"
   keywords:
   - "infinispan"
   - "embedded"
@@ -9,3 +10,6 @@ metadata:
   categories:
   - "data"
   - "caching"
+  guide: "https://docs.quarkiverse.io/quarkus-infinispan-embedded/dev/"
+  config:
+  - "quarkus.infinispan-embedded."
