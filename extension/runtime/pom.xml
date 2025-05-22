@@ -9,7 +9,9 @@
 
     <artifactId>quarkus-infinispan-embedded</artifactId>
     <name>Quarkus - Infinispan - Embedded :: Runtime</name>
-
+    <description>
+        This extension leverages Infinispan library mode in Quarkus apps.
+    </description>
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
