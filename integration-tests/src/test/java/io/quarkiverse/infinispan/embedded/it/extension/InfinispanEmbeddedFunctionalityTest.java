@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded;
+package io.quarkiverse.infinispan.embedded.it.extension;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;

@@ -118,15 +118,15 @@
          </authorization>
       </security-->
       <serialization>
-         <advanced-externalizer class="org.infinispan.quarkus.embedded.TestAdvancedExternalizer$IdViaConfigObj$Externalizer" id="9001" />
-         <advanced-externalizer class="org.infinispan.quarkus.embedded.TestAdvancedExternalizer$IdViaAnnotationObj$Externalizer" id="9002" />
+         <advanced-externalizer class="io.quarkiverse.infinispan.embedded.it.extension.TestAdvancedExternalizer$IdViaConfigObj$Externalizer" id="9001" />
+         <advanced-externalizer class="io.quarkiverse.infinispan.embedded.it.extension.TestAdvancedExternalizer$IdViaAnnotationObj$Externalizer" id="9002" />
          <allow-list>
             <class>org.infinispan.test.data.Person</class>
             <regex>org.infinispan.test.data.*</regex>
          </allow-list>
       </serialization>
       <metrics gauges="true" histograms="true" accurate-size="true"/>
-      <jmx enabled="true" domain="my-domain" mbean-server-lookup="org.infinispan.quarkus.embedded.CustomMBeanServerLookup">
+      <jmx enabled="true" domain="my-domain" mbean-server-lookup="io.quarkiverse.infinispan.embedded.it.extension.CustomMBeanServerLookup">
          <property name="key">value</property>
       </jmx>
       <global-state>
@@ -204,7 +204,7 @@
       <replicated-cache name="capedwarf-metadata" mode="SYNC">
          <transaction mode="NON_XA"/>
          <persistence passivation="true">
-            <store class="org.infinispan.quarkus.embedded.TestCacheLoader" segmented="false" />
+            <store class="io.quarkiverse.infinispan.embedded.it.extension.TestCacheLoader" segmented="false" />
          </persistence>
          <memory storage="OBJECT"/>
       </replicated-cache>
@@ -389,6 +389,12 @@
                         size="SELECT COUNT(*) FROM books"/>
             </sql:query-jdbc-store>
          </persistence>
+      </distributed-cache>
+      <distributed-cache name="expensiveResourceCache">
+         <encoding media-type="application/x-protostream"/>
+      </distributed-cache>
+      <distributed-cache name="sunrise-cache">
+         <encoding media-type="application/x-protostream"/>
       </distributed-cache>
    </cache-container>
 </infinispan>
