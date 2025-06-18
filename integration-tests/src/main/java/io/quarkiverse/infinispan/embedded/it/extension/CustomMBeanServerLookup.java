@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded;
+package io.quarkiverse.infinispan.embedded.it.extension;
 
 import java.lang.management.ManagementFactory;
 import java.util.Properties;

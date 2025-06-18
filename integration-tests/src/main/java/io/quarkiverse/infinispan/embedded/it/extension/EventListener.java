@@ -1,4 +1,4 @@
-package org.infinispan.quarkus.embedded;
+package io.quarkiverse.infinispan.embedded.it.extension;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;

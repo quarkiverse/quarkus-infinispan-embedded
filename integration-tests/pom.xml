@@ -28,6 +28,10 @@
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-client-jackson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkiverse.infinispan</groupId>
             <artifactId>quarkus-infinispan-embedded</artifactId>
             <version>${project.version}</version>
