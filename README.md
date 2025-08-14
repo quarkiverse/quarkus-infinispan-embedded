@@ -13,8 +13,7 @@ This repository contains Quarkus extensions that facilitate seamless integration
 Refer to the comprehensive [documentation](https://docs.quarkiverse.io/quarkus-infinispan-embedded/dev) for detailed information and usage guidelines.
 
 ## Samples
-
-Check out the [sample](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/sample).
+Check out the [samples](https://github.com/quarkiverse/quarkus-infinispan-embedded/tree/main/samples).
 
 ## Getting Started
 
