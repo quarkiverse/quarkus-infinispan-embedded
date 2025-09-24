@@ -123,6 +123,10 @@ class InfinispanEmbeddedProcessor {
                 .addAll(index.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
         List<SerializationContextInitializer> initializers = new ArrayList<>(initializerClasses.size());
         for (ClassInfo ci : initializerClasses) {
+            if (ci.isAbstract()) {
+                // don't try to instantiate an abstract class...
+                continue;
+            }
             try {
                 Class<?> initializerClass = Thread.currentThread().getContextClassLoader().loadClass(ci.toString());
                 SerializationContextInitializer sci = (SerializationContextInitializer) initializerClass
