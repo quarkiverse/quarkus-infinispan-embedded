@@ -26,6 +26,7 @@
         <infinispan.version>15.0.19.Final</infinispan.version>
         <jgroups.raft.version>1.0.14.Final</jgroups.raft.version>
         <assertj.version>3.26.3</assertj.version>
+        <hibernate-search.version>7.1.2.Final</hibernate-search.version>
     </properties>
     <licenses>
         <license>
@@ -40,6 +41,13 @@
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-bom</artifactId>
                 <version>${infinispan.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.search</groupId>
+                <artifactId>hibernate-search-bom</artifactId>
+                <version>${hibernate-search.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -119,6 +127,7 @@
                 <module>samples/sample</module>
                 <module>samples/cache-sample</module>
                 <module>samples/persisted-cache-sample</module>
+                <module>samples/query-sample</module>
             </modules>
         </profile>
         <profile>
