@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.cache.same;
+package io.quarkiverse.infinispan.embedded.persistence.sample;
 
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.protostream.annotations.Proto;

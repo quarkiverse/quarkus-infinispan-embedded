@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.cache.sample;
+package io.quarkiverse.infinispan.embedded.persistence.sample;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
