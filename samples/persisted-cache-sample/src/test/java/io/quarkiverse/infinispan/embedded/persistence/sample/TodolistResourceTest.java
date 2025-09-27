@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.cache.sample;
+package io.quarkiverse.infinispan.embedded.persistence.sample;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import io.quarkiverse.infinispan.embedded.cache.same.TodoItem;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

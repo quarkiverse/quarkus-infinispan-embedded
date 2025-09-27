@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.cache.sample;
+package io.quarkiverse.infinispan.embedded.persistence.sample;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;

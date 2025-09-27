@@ -1,4 +1,4 @@
-package io.quarkiverse.infinispan.embedded.cache.same;
+package io.quarkiverse.infinispan.embedded.persistence.sample;
 
 import java.util.Comparator;
 import java.util.List;
