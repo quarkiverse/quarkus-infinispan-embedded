@@ -10,6 +10,11 @@ The new *Infinispan Embedded Quarkus extension* simplifies using Infinispan as a
 
 This extension is ideal for developers who want to build high-speed, lightweight applications without the overhead of managing external data services.
 
+[IMPORTANT]
+====
+Native support in this extension is limited and not recommended.
+For native applications, consider using Infinispan in Client/Server mode.
+====
 
 == Quick Overview
 
@@ -112,6 +117,22 @@ while the clustered configuration uses CacheMode.DIST_SYNC with Protobuf (applic
 as the media type, ensuring compatibility with remote marshalling.
 This approach simplifies development by reducing boilerplate, while still supporting
 custom XML-based configurations when needed.
+
+== Embedded Query
+The Hibernate Search version must match the Infinispan version.
+If necessary, import the Hibernate Search BOM to override the
+Quarkus-provided version.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.hibernate.search</groupId>
+    <artifactId>hibernate-search-bom</artifactId>
+    <version>7.1.2.Final</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
 
 == Configuration Settings
 

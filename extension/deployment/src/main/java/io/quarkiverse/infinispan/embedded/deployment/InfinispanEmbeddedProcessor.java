@@ -38,6 +38,7 @@ import org.infinispan.protostream.FileDescriptorSource;
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.protostream.MessageMarshaller;
 import org.infinispan.protostream.SerializationContextInitializer;
+import org.infinispan.protostream.WrappedMessage;
 import org.infinispan.protostream.schema.Schema;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
@@ -92,6 +93,8 @@ class InfinispanEmbeddedProcessor {
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-jdbc-common"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-jdbc"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-sql"));
+        indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-query"));
+        indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-query-core"));
     }
 
     @BuildStep
@@ -103,6 +106,11 @@ class InfinispanEmbeddedProcessor {
 
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(InfinispanEmbeddedProducer.class));
         additionalBeans.produce(AdditionalBeanBuildItem.builder().addBeanClass(Embedded.class).build());
+
+        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.query.core.proto"));
+        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.query.proto"));
+        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.jdbc.proto"));
+        resources.produce(new NativeImageResourceBuildItem(WrappedMessage.PROTO_FILE));
 
         for (Class<?> serviceLoadedInterface : Arrays.asList(ModuleMetadataBuilder.class, ConfigurationParser.class)) {
             // Need to register all the modules as service providers so they can be picked up at runtime
@@ -192,9 +200,6 @@ class InfinispanEmbeddedProcessor {
                 reflectiveClass, false, false, excludedClasses);
         addReflectionForName("org.infinispan.persistence.keymappers.Key2StringMapper", true, combinedIndex, reflectiveClass,
                 false, false, excludedClasses);
-
-        resources.produce(new NativeImageResourceBuildItem(
-                "proto/generated/persistence.jdbc.proto"));
 
         // Ensure that optional store implementations not included in core-graalvm are still detected
         addReflectionForClass(StoreConfigurationBuilder.class, combinedIndex, reflectiveClass, excludedClasses);
