@@ -47,7 +47,7 @@ Environment variable: `+++QUARKUS_INFINISPAN_EMBEDDED_CLUSTERED+++`
 endif::add-copy-button-to-env-var[]
 --
 |boolean
-|`true`
+|`+++true+++`
 
 |===
 

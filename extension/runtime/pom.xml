@@ -26,8 +26,10 @@
             <artifactId>quarkus-caffeine</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+            <groupId>io.quarkiverse.micrometer.registry</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus-v1</artifactId>
+            <version>${quarkus-micrometer-registry-prometheus-v1.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

@@ -21,12 +21,13 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
-        <quarkus.version>3.20.1</quarkus.version>
-        <quarkus-antora.version>1.2.0</quarkus-antora.version>
-        <infinispan.version>15.0.19.Final</infinispan.version>
+        <quarkus.version>3.27.0</quarkus.version>
+        <quarkus-antora.version>3.25.0</quarkus-antora.version>
+        <quarkus-build-reporter.version>3.12.1</quarkus-build-reporter.version>
+        <quarkus-micrometer-registry-prometheus-v1.version>3.4.1</quarkus-micrometer-registry-prometheus-v1.version>
+        <infinispan.version>16.0.0.Dev04</infinispan.version>
         <jgroups.raft.version>1.0.14.Final</jgroups.raft.version>
         <assertj.version>3.26.3</assertj.version>
-        <hibernate-search.version>7.1.2.Final</hibernate-search.version>
     </properties>
     <licenses>
         <license>
@@ -41,13 +42,6 @@
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-bom</artifactId>
                 <version>${infinispan.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate.search</groupId>
-                <artifactId>hibernate-search-bom</artifactId>
-                <version>${hibernate-search.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -75,7 +69,7 @@
             <extension>
                 <groupId>io.quarkus.bot</groupId>
                 <artifactId>build-reporter-maven-extension</artifactId>
-                <version>3.9.6</version>
+                <version>${quarkus-build-reporter.version}</version>
             </extension>
         </extensions>
         <pluginManagement>
