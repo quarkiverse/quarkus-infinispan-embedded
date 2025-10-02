@@ -4,7 +4,6 @@ import static org.infinispan.protostream.FileDescriptorSource.fromString;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 
@@ -123,16 +122,6 @@ public class InfinispanEmbeddedProducer {
 
         QuarkusContextInitializer() {
 
-        }
-
-        @Override
-        public String getProtoFileName() {
-            return schema.getName();
-        }
-
-        @Override
-        public String getProtoFile() throws UncheckedIOException {
-            return schema.toString();
         }
 
         @Override
