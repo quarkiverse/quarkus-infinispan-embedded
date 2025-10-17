@@ -124,12 +124,17 @@ class InfinispanEmbeddedProcessor {
         }
 
         // Protostream
-        Index index = applicationIndexBuildItem.getIndex();
-        Collection<ClassInfo> initializerClasses = index.getAllKnownImplementors(DotName.createSimple(
+        // Use CombinedIndex to include both application classes and dependencies
+        IndexView combinedIndex = combinedIndexBuildItem.getIndex();
+        Collection<ClassInfo> initializerClasses = combinedIndex.getAllKnownImplementors(DotName.createSimple(
                 SerializationContextInitializer.class.getName()));
         initializerClasses
-                .addAll(index.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
+                .addAll(combinedIndex.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
+
+        // Collect both class names (for META-INF/services) and instances (for direct initialization)
+        Set<String> initializerNames = new HashSet<>(initializerClasses.size());
         List<SerializationContextInitializer> initializers = new ArrayList<>(initializerClasses.size());
+
         for (ClassInfo ci : initializerClasses) {
             if (ci.isAbstract()) {
                 // don't try to instantiate an abstract class...
@@ -137,14 +142,24 @@ class InfinispanEmbeddedProcessor {
             }
             try {
                 Class<?> initializerClass = Thread.currentThread().getContextClassLoader().loadClass(ci.toString());
+                // Try to instantiate to verify it's accessible
                 SerializationContextInitializer sci = (SerializationContextInitializer) initializerClass
                         .getDeclaredConstructor().newInstance();
+                // Only add if instantiation succeeded
+                initializerNames.add(initializerClass.getName());
                 initializers.add(sci);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                     | ClassNotFoundException | NoSuchMethodException e) {
-                // This shouldn't ever be possible as annotation processor should generate empty constructor
-                throw new RuntimeException(e);
+                // Skip classes that can't be instantiated (e.g., inner classes, package-private classes from other modules)
+                // These will be handled by their respective modules or at runtime
+                continue;
             }
+        }
+
+        // Generate META-INF/services file for ServiceLoader compatibility
+        if (!initializerNames.isEmpty()) {
+            serviceProvider.produce(
+                    new ServiceProviderBuildItem(SerializationContextInitializer.class.getName(), initializerNames));
         }
 
         Set<DotName> excludedClasses = new HashSet<>();
@@ -154,9 +169,6 @@ class InfinispanEmbeddedProcessor {
 
         // This contains parts from the index from the app itself
         Index appOnlyIndex = applicationIndexBuildItem.getIndex();
-
-        // Persistence SPIs
-        IndexView combinedIndex = combinedIndexBuildItem.getIndex();
 
         // We need to use the CombinedIndex for these interfaces in order to discover implementations of the various
         // subclasses.
