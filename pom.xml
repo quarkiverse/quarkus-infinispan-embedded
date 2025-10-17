@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <name>Quarkus - Infinispan - Embedded :: Parent</name>
     <modules>
+        <module>test-lib</module>
         <module>extension</module>
     </modules>
     <scm>
