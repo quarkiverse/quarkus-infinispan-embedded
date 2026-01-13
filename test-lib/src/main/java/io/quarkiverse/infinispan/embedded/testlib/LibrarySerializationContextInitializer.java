@@ -1,9 +1,8 @@
 package io.quarkiverse.infinispan.embedded.testlib;
 
-import java.io.UncheckedIOException;
-
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.SerializationContextInitializer;
+import org.infinispan.protostream.schema.Schema;
 
 /**
  * Test SerializationContextInitializer from a separate library module.
@@ -36,15 +35,15 @@ import org.infinispan.protostream.SerializationContextInitializer;
  * </ol>
  * </p>
  */
-public class LibrarySerializationContextInitializer implements SerializationContextInitializer {
+public class LibrarySerializationContextInitializer implements SerializationContextInitializer, Schema {
 
     @Override
-    public String getProtoFileName() {
+    public String getName() {
         return "library-test.proto";
     }
 
     @Override
-    public String getProtoFile() throws UncheckedIOException {
+    public String getContent() {
         return "syntax = \"proto3\";\npackage io.quarkiverse.infinispan.embedded.testlib;\n\n"
                 + "message TestMessage {\n"
                 + "  string name = 1;\n"

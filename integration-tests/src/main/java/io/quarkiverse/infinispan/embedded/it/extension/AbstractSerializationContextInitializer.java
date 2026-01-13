@@ -4,6 +4,7 @@ import java.io.UncheckedIOException;
 
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.SerializationContextInitializer;
+import org.infinispan.protostream.schema.Schema;
 
 /**
  * Abstract base class for SerializationContextInitializer implementations.
@@ -46,13 +47,13 @@ import org.infinispan.protostream.SerializationContextInitializer;
  * </p>
  *
  */
-public abstract class AbstractSerializationContextInitializer implements SerializationContextInitializer {
+public abstract class AbstractSerializationContextInitializer implements SerializationContextInitializer, Schema {
 
     @Override
-    public abstract String getProtoFileName();
+    public abstract String getName();
 
     @Override
-    public abstract String getProtoFile() throws UncheckedIOException;
+    public abstract String getContent() throws UncheckedIOException;
 
     @Override
     public abstract void registerSchema(SerializationContext serCtx);
