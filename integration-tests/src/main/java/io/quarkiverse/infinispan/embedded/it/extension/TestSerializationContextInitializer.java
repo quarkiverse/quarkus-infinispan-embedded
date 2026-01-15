@@ -4,6 +4,7 @@ import java.io.UncheckedIOException;
 
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.SerializationContextInitializer;
+import org.infinispan.protostream.schema.Schema;
 
 /**
  * Concrete SerializationContextInitializer for testing META-INF/services generation.
@@ -24,15 +25,15 @@ import org.infinispan.protostream.SerializationContextInitializer;
  * </ul>
  * </p>
  */
-public class TestSerializationContextInitializer implements SerializationContextInitializer {
+public class TestSerializationContextInitializer implements SerializationContextInitializer, Schema {
 
     @Override
-    public String getProtoFileName() {
+    public String getName() {
         return "test.proto";
     }
 
     @Override
-    public String getProtoFile() throws UncheckedIOException {
+    public String getContent() throws UncheckedIOException {
         return "syntax = \"proto3\";\npackage test;\n";
     }
 

@@ -17,8 +17,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 
 import org.infinispan.AdvancedCache;
-import org.infinispan.commons.marshall.AbstractExternalizer;
-import org.infinispan.commons.marshall.AdvancedExternalizer;
 import org.infinispan.configuration.cache.AbstractModuleConfigurationBuilder;
 import org.infinispan.configuration.cache.StoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfigurationBuilder;
@@ -30,7 +28,6 @@ import org.infinispan.health.ClusterHealth;
 import org.infinispan.interceptors.AsyncInterceptor;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.Listener;
-import org.infinispan.persistence.spi.CacheWriter;
 import org.infinispan.persistence.spi.NonBlockingStore;
 import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.EnumMarshaller;
@@ -52,7 +49,6 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 
 import io.quarkiverse.infinispan.embedded.Embedded;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
-import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedRuntimeConfig;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
@@ -61,7 +57,7 @@ import io.quarkus.arc.deployment.BeanRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.cache.CompositeCacheKey;
-import io.quarkus.cache.deployment.spi.CacheManagerInfoBuildItem;
+import io.quarkus.cache.deployment.CacheManagerInfoBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -72,6 +68,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 
 class InfinispanEmbeddedProcessor {
@@ -93,8 +90,18 @@ class InfinispanEmbeddedProcessor {
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-jdbc-common"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-jdbc"));
         indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-cachestore-sql"));
-        indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-query"));
-        indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-query-core"));
+        if (isQueryAvailable()) {
+            indexDependency.produce(new IndexDependencyBuildItem("org.infinispan", "infinispan-query"));
+        }
+    }
+
+    private static boolean isQueryAvailable() {
+        try {
+            Thread.currentThread().getContextClassLoader().loadClass("org.infinispan.query.impl.LifecycleManager");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     @BuildStep
@@ -107,9 +114,24 @@ class InfinispanEmbeddedProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(InfinispanEmbeddedProducer.class));
         additionalBeans.produce(AdditionalBeanBuildItem.builder().addBeanClass(Embedded.class).build());
 
-        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.query.core.proto"));
-        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.query.proto"));
-        resources.produce(new NativeImageResourceBuildItem("proto/generated/persistence.jdbc.proto"));
+        // Infinispan core proto files
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/global.core.proto"));
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/persistence.core.proto"));
+        // Infinispan commons proto files
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/commons/global.commons.proto"));
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/commons/persistence.commons.proto"));
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/commons/user.commons.proto"));
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/commons/query/client/query.proto"));
+        // Infinispan query proto files (only when infinispan-query is on the classpath)
+        if (isQueryAvailable()) {
+            resources.produce(new NativeImageResourceBuildItem("org/infinispan/query/core/persistence.query.core.proto"));
+            resources.produce(new NativeImageResourceBuildItem("org/infinispan/query/core/global.query.core.proto"));
+            resources.produce(new NativeImageResourceBuildItem("org/infinispan/query/global.query.proto"));
+            resources.produce(
+                    new NativeImageResourceBuildItem("org/infinispan/query/objectfilter/global.objectfilter.proto"));
+        }
+        // Infinispan JDBC store proto files
+        resources.produce(new NativeImageResourceBuildItem("org/infinispan/persistence/jdbc/persistence.jdbc.proto"));
         resources.produce(new NativeImageResourceBuildItem(WrappedMessage.PROTO_FILE));
 
         for (Class<?> serviceLoadedInterface : Arrays.asList(ModuleMetadataBuilder.class, ConfigurationParser.class)) {
@@ -130,6 +152,9 @@ class InfinispanEmbeddedProcessor {
                 SerializationContextInitializer.class.getName()));
         initializerClasses
                 .addAll(combinedIndex.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
+
+        initializerClasses
+                .addAll(combinedIndex.getAllKnownImplementors(DotName.createSimple(Schema.class.getName())));
 
         // Collect both class names (for META-INF/services) and instances (for direct initialization)
         Set<String> initializerNames = new HashSet<>(initializerClasses.size());
@@ -173,7 +198,6 @@ class InfinispanEmbeddedProcessor {
         // We need to use the CombinedIndex for these interfaces in order to discover implementations of the various
         // subclasses.
         addReflectionForClass(CacheLoader.class, combinedIndex, reflectiveClass, excludedClasses);
-        addReflectionForClass(CacheWriter.class, combinedIndex, reflectiveClass, excludedClasses);
         addReflectionForClass(NonBlockingStore.class, combinedIndex, reflectiveClass, excludedClasses);
         addReflectionForName(AsyncInterceptor.class.getName(), true, combinedIndex, reflectiveClass, false, true,
                 excludedClasses);
@@ -193,11 +217,6 @@ class InfinispanEmbeddedProcessor {
             }
         }
 
-        // We only register the app advanced externalizers as all of the Infinispan ones are explicitly defined
-        addReflectionForClass(AdvancedExternalizer.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
-        // Due to the index not containing AbstractExternalizer it doesn't know that it implements AdvancedExternalizer
-        // thus we also have to include classes that extend AbstractExternalizer
-        addReflectionForClass(AbstractExternalizer.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
         addReflectionForClass(CacheHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
         addReflectionForClass(ClusterHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
 
@@ -227,6 +246,18 @@ class InfinispanEmbeddedProcessor {
     BeanContainerListenerBuildItem build(InfinispanRecorder recorder, ProtobufInitializers initializers) {
         // This is necessary to be done for Protostream Marshaller init in native
         return new BeanContainerListenerBuildItem(recorder.configureInfinispan(initializers.getInitializers()));
+    }
+
+    @BuildStep
+    void runtime(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInit) {
+        runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.jgroups.util.Util"));
+        // Lucene FFM (Foreign Function & Memory) classes need runtime init when query is on the classpath
+        if (isQueryAvailable()) {
+            runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.apache.lucene.store.MMapDirectory"));
+            runtimeInit
+                    .produce(new RuntimeInitializedClassBuildItem("org.apache.lucene.store.MemorySegmentIndexInputProvider"));
+            runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.apache.lucene.store.PosixNativeAccess"));
+        }
     }
 
     private void addReflectionForClass(Class<?> classToUse, IndexView indexView,
@@ -331,8 +362,8 @@ class InfinispanEmbeddedProcessor {
 
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
-    void configureRuntimeProperties(InfinispanRecorder recorder, InfinispanEmbeddedRuntimeConfig runtimeConfig) {
-        recorder.configureRuntimeProperties(runtimeConfig);
+    void configureRuntimeProperties(InfinispanRecorder recorder) {
+        recorder.configureRuntimeProperties();
     }
 
     @BuildStep

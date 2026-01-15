@@ -1,7 +1,5 @@
 package io.quarkiverse.infinispan.embedded.it.extension;
 
-import java.io.UncheckedIOException;
-
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.SerializationContextInitializer;
 
@@ -47,12 +45,6 @@ import org.infinispan.protostream.SerializationContextInitializer;
  *
  */
 public abstract class AbstractSerializationContextInitializer implements SerializationContextInitializer {
-
-    @Override
-    public abstract String getProtoFileName();
-
-    @Override
-    public abstract String getProtoFile() throws UncheckedIOException;
 
     @Override
     public abstract void registerSchema(SerializationContext serCtx);
