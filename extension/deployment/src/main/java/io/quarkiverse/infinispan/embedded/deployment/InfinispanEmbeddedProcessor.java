@@ -17,8 +17,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 
 import org.infinispan.AdvancedCache;
-import org.infinispan.commons.marshall.AbstractExternalizer;
-import org.infinispan.commons.marshall.AdvancedExternalizer;
 import org.infinispan.configuration.cache.AbstractModuleConfigurationBuilder;
 import org.infinispan.configuration.cache.StoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfigurationBuilder;
@@ -30,7 +28,6 @@ import org.infinispan.health.ClusterHealth;
 import org.infinispan.interceptors.AsyncInterceptor;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.Listener;
-import org.infinispan.persistence.spi.CacheWriter;
 import org.infinispan.persistence.spi.NonBlockingStore;
 import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.EnumMarshaller;
@@ -131,6 +128,9 @@ class InfinispanEmbeddedProcessor {
         initializerClasses
                 .addAll(combinedIndex.getAllKnownImplementors(DotName.createSimple(GeneratedSchema.class.getName())));
 
+        initializerClasses
+                .addAll(combinedIndex.getAllKnownImplementors(DotName.createSimple(Schema.class.getName())));
+
         // Collect both class names (for META-INF/services) and instances (for direct initialization)
         Set<String> initializerNames = new HashSet<>(initializerClasses.size());
         List<SerializationContextInitializer> initializers = new ArrayList<>(initializerClasses.size());
@@ -173,7 +173,6 @@ class InfinispanEmbeddedProcessor {
         // We need to use the CombinedIndex for these interfaces in order to discover implementations of the various
         // subclasses.
         addReflectionForClass(CacheLoader.class, combinedIndex, reflectiveClass, excludedClasses);
-        addReflectionForClass(CacheWriter.class, combinedIndex, reflectiveClass, excludedClasses);
         addReflectionForClass(NonBlockingStore.class, combinedIndex, reflectiveClass, excludedClasses);
         addReflectionForName(AsyncInterceptor.class.getName(), true, combinedIndex, reflectiveClass, false, true,
                 excludedClasses);
@@ -193,11 +192,6 @@ class InfinispanEmbeddedProcessor {
             }
         }
 
-        // We only register the app advanced externalizers as all of the Infinispan ones are explicitly defined
-        addReflectionForClass(AdvancedExternalizer.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
-        // Due to the index not containing AbstractExternalizer it doesn't know that it implements AdvancedExternalizer
-        // thus we also have to include classes that extend AbstractExternalizer
-        addReflectionForClass(AbstractExternalizer.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
         addReflectionForClass(CacheHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
         addReflectionForClass(ClusterHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
 

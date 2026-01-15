@@ -24,8 +24,15 @@
             <artifactId>quarkus-caffeine-deployment</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkiverse.micrometer.registry</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus-v1-deployment</artifactId>
+            <version>${quarkus-micrometer-registry-prometheus-v1.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-micrometer-registry-prometheus-deployment</artifactId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -66,6 +73,11 @@
                             <groupId>io.quarkus</groupId>
                             <artifactId>quarkus-extension-processor</artifactId>
                             <version>${quarkus.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.infinispan.protostream</groupId>
+                            <artifactId>protostream-processor</artifactId>
+                            <version>${protostream.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
