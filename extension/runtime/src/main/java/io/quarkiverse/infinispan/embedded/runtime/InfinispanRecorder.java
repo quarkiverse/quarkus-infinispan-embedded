@@ -31,9 +31,12 @@ import io.quarkus.runtime.annotations.RelaxedValidation;
 public class InfinispanRecorder {
     private static final Logger Log = Logger.getLogger(InfinispanRecorder.class);
     private final RuntimeValue<InfinispanCachesConfig> infinispanCacheConfigRV;
+    private final RuntimeValue<InfinispanEmbeddedRuntimeConfig> infinispanEmbeddedRuntimeConfigRV;
 
-    public InfinispanRecorder(RuntimeValue<InfinispanCachesConfig> infinispanCacheConfigRV) {
+    public InfinispanRecorder(RuntimeValue<InfinispanCachesConfig> infinispanCacheConfigRV,
+            RuntimeValue<InfinispanEmbeddedRuntimeConfig> infinispanEmbeddedRuntimeConfigRV) {
         this.infinispanCacheConfigRV = infinispanCacheConfigRV;
+        this.infinispanEmbeddedRuntimeConfigRV = infinispanEmbeddedRuntimeConfigRV;
     }
 
     public BeanContainerListener configureInfinispan(@RelaxedValidation List<SerializationContextInitializer> initializers) {
@@ -43,9 +46,9 @@ public class InfinispanRecorder {
         };
     }
 
-    public void configureRuntimeProperties(InfinispanEmbeddedRuntimeConfig infinispanEmbeddedRuntimeConfig) {
+    public void configureRuntimeProperties() {
         InfinispanEmbeddedProducer iep = Arc.container().instance(InfinispanEmbeddedProducer.class).get();
-        iep.setRuntimeConfig(infinispanEmbeddedRuntimeConfig);
+        iep.setRuntimeConfig(this.infinispanEmbeddedRuntimeConfigRV.getValue());
     }
 
     public Supplier<AdvancedCache> infinispanAdvancedCacheSupplier(String cacheName) {

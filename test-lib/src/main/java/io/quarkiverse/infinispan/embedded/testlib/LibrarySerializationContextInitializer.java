@@ -1,7 +1,5 @@
 package io.quarkiverse.infinispan.embedded.testlib;
 
-import java.io.UncheckedIOException;
-
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.SerializationContextInitializer;
 
@@ -37,19 +35,6 @@ import org.infinispan.protostream.SerializationContextInitializer;
  * </p>
  */
 public class LibrarySerializationContextInitializer implements SerializationContextInitializer {
-
-    @Override
-    public String getProtoFileName() {
-        return "library-test.proto";
-    }
-
-    @Override
-    public String getProtoFile() throws UncheckedIOException {
-        return "syntax = \"proto3\";\npackage io.quarkiverse.infinispan.embedded.testlib;\n\n"
-                + "message TestMessage {\n"
-                + "  string name = 1;\n"
-                + "}\n";
-    }
 
     @Override
     public void registerSchema(SerializationContext serCtx) {

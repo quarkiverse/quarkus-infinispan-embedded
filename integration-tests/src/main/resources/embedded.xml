@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <infinispan
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="urn:infinispan:config:15.0 https://infinispan.org/schemas/infinispan-config-15.0.xsd
-                          urn:infinispan:config:store:jdbc:15.0 https://infinispan.org/schemas/infinispan-cachestore-jdbc-config-15.0.xsd"
-        xmlns="urn:infinispan:config:15.0"
-        xmlns:ispn="urn:infinispan:config:15.0"
-        xmlns:jdbc="urn:infinispan:config:store:jdbc:15.0"
-        xmlns:sql="urn:infinispan:config:store:sql:15.0" >
-   <jgroups transport="org.infinispan.remoting.transport.jgroups.JGroupsTransport">
+        xsi:schemaLocation="urn:infinispan:config:16.0 https://infinispan.org/schemas/infinispan-config-16.0.xsd
+                          urn:infinispan:config:store:jdbc:16.0 https://infinispan.org/schemas/infinispan-cachestore-jdbc-config-16.0.xsd"
+        xmlns="urn:infinispan:config:16.0"
+        xmlns:ispn="urn:infinispan:config:16.0"
+        xmlns:jdbc="urn:infinispan:config:store:jdbc:16.0"
+        xmlns:sql="urn:infinispan:config:store:sql:16.0" >
+   <jgroups>
       <!-- Load external JGroups stacks -->
       <stack-file name="udp-test" path="stacks/udp.xml"/>
       <stack-file name="tcp-test" path="stacks/tcp_mping/tcp1.xml"/>
@@ -101,31 +101,18 @@
    <cache-container name="maximal" default-cache="local" expiration-executor="infinispan-expiration"
                     listener-executor="infinispan-listener" non-blocking-executor="infinispan-non-blocking"
                     blocking-executor="infinispan-blocking"
-                    statistics="true" shutdown-hook="DONT_REGISTER" zero-capacity-node="false">
+                    statistics="true" shutdown-hook="DONT_REGISTER">
       <transport cluster="maximal-cluster" lock-timeout="120000" stack="xsite" node-name="a-node" machine="a" rack="b" site="c"
                  initial-cluster-size="1" initial-cluster-timeout="30000">
          <property name="key">value</property>
       </transport>
-      <!--security>
-         <authorization audit-logger="org.infinispan.security.audit.NullAuditLogger">
-            <identity-role-mapper/>
-            <roles>
-               <role name="peasant" permissions="READ"/>
-               <role name="vavasour" permissions="READ WRITE"/>
-               <role name="vassal" permissions="READ WRITE LISTEN"/>
-               <role name="king" permissions="ALL"/>
-            </roles>
-         </authorization>
-      </security-->
       <serialization>
-         <advanced-externalizer class="io.quarkiverse.infinispan.embedded.it.extension.TestAdvancedExternalizer$IdViaConfigObj$Externalizer" id="9001" />
-         <advanced-externalizer class="io.quarkiverse.infinispan.embedded.it.extension.TestAdvancedExternalizer$IdViaAnnotationObj$Externalizer" id="9002" />
          <allow-list>
             <class>org.infinispan.test.data.Person</class>
             <regex>org.infinispan.test.data.*</regex>
          </allow-list>
       </serialization>
-      <metrics gauges="true" histograms="true" accurate-size="true"/>
+      <metrics histograms="true" accurate-size="true"/>
       <jmx enabled="true" domain="my-domain" mbean-server-lookup="io.quarkiverse.infinispan.embedded.it.extension.CustomMBeanServerLookup">
          <property name="key">value</property>
       </jmx>
@@ -144,7 +131,7 @@
          <transaction mode="FULL_XA" stop-timeout="60000" locking="OPTIMISTIC" transaction-manager-lookup="org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup" complete-timeout="34000" reaper-interval="35000" auto-commit="true" />
          <expiration interval="10000" lifespan="10000"/>
          <persistence passivation="true" availability-interval="2000" connection-attempts="5" connection-interval="100">
-            <file-store path="quarkus-persistentPath" shared="false" preload="true" purge="false">
+            <file-store path="quarkus-persistentPath" shared="false" preload="true">
                <write-behind modification-queue-size="2048" fail-silently="true"/>
                <property name="test_property">foo_bar</property>
             </file-store>
@@ -153,13 +140,12 @@
       <local-cache name="quarkus-transaction">
          <transaction mode="FULL_XA" transaction-manager-lookup="org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup"/>
       </local-cache>
-      <invalidation-cache name="invalid" mode="SYNC" statistics="true">
+      <invalidation-cache name="invalid" statistics="true">
          <locking acquire-timeout="30500" concurrency-level="2500" isolation="READ_UNCOMMITTED" striping="true"/>
          <transaction mode="BATCH" stop-timeout="60500"  locking="OPTIMISTIC"/>
-         <expiration interval="10500" lifespan="11" max-idle="11"/>
+         <expiration interval="10500" lifespan="11" max-idle="10"/>
       </invalidation-cache>
-      <replicated-cache name="repl" mode="SYNC" statistics="true" segments="10"
-                        consistent-hash-factory="org.infinispan.distribution.ch.impl.SyncConsistentHashFactory"
+      <replicated-cache name="repl" statistics="true" segments="10"
                         key-partitioner="org.infinispan.distribution.ch.impl.HashFunctionPartitioner">
          <encoding>
             <key media-type="application/x-java-object"/>
@@ -167,19 +153,18 @@
          </encoding>
          <locking acquire-timeout="31000" concurrency-level="3000" isolation="SERIALIZABLE" striping="true"/>
          <transaction mode="BATCH" stop-timeout="61000" locking="PESSIMISTIC"/>
-         <expiration interval="11000" lifespan="12" max-idle="12" touch="ASYNC"/>
-         <memory storage="OBJECT" max-count="21000"/>
+         <expiration interval="11000" lifespan="12" max-idle="11" touch="ASYNC"/>
+         <memory max-count="21000"/>
          <state-transfer enabled="false" timeout="60000" chunk-size="10000"/>
       </replicated-cache>
-      <distributed-cache name="dist" mode="SYNC" l1-lifespan="1200000" owners="4"
+      <distributed-cache name="dist" l1-lifespan="1200000" owners="4"
                          remote-timeout="35000" segments="2" statistics="true"
-                         consistent-hash-factory="org.infinispan.distribution.ch.impl.SyncConsistentHashFactory"
                          key-partitioner="org.infinispan.distribution.ch.impl.HashFunctionPartitioner">
          <backups max-cleanup-delay="60000" tombstone-map-size="128000">
-            <backup site="NYC" failure-policy="WARN" strategy="SYNC" timeout="12500">
+            <backup site="NYC" strategy="SYNC" timeout="12500">
                <state-transfer chunk-size="600" timeout="2400000"/>
             </backup>
-            <backup site="SFO" failure-policy="IGNORE" strategy="ASYNC" timeout="13000">
+            <backup site="SFO" failure-policy="IGNORE" timeout="13000">
                <state-transfer chunk-size="128" mode="AUTO"/>
             </backup>
             <backup site="LON" failure-policy="FAIL" strategy="SYNC" timeout="13500">
@@ -188,68 +173,63 @@
          </backups>
          <backup-for remote-cache="users" remote-site="LON"/>
          <locking acquire-timeout="31500" concurrency-level="3500" isolation="READ_COMMITTED" striping="true"/>
-         <transaction mode="FULL_XA" stop-timeout="61500" locking="OPTIMISTIC"/>
-         <expiration interval="11500" lifespan="13" max-idle="13" touch="SYNC"/>
-         <memory storage="OBJECT" max-count="21500"/>
+         <transaction mode="FULL_XA" stop-timeout="61500"/>
+         <expiration interval="11500" lifespan="13" max-idle="12"/>
+         <memory max-count="21500"/>
          <partition-handling when-split="ALLOW_READS" merge-policy="PREFERRED_NON_NULL"/>
          <state-transfer enabled="true" timeout="60500" chunk-size="10500" />
       </distributed-cache>
-      <replicated-cache name="capedwarf-data" mode="SYNC">
+      <replicated-cache name="capedwarf-data">
          <transaction mode="NON_XA"/>
-         <persistence passivation="false">
-            <file-store preload="true" purge="false"/>
+         <persistence>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT"/>
       </replicated-cache>
-      <replicated-cache name="capedwarf-metadata" mode="SYNC">
+      <replicated-cache name="capedwarf-metadata">
          <transaction mode="NON_XA"/>
          <persistence passivation="true">
-            <store class="io.quarkiverse.infinispan.embedded.it.extension.TestCacheLoader" segmented="false" />
+            <file-store segmented="false" />
          </persistence>
-         <memory storage="OBJECT"/>
       </replicated-cache>
-      <replicated-cache name="capedwarf-memcache" mode="SYNC">
+      <replicated-cache name="capedwarf-memcache">
          <transaction mode="NON_XA" locking="PESSIMISTIC"/>
-         <memory storage="OBJECT"/>
       </replicated-cache>
-      <distributed-cache name="capedwarf-default" mode="SYNC">
+      <distributed-cache name="capedwarf-default">
          <transaction mode="NON_XA"/>
          <persistence passivation="true">
-            <file-store preload="true" purge="false"/>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT"/>
       </distributed-cache>
-      <distributed-cache name="capedwarf-dist" mode="SYNC">
+      <distributed-cache name="capedwarf-dist">
          <transaction mode="NON_XA" locking="PESSIMISTIC"/>
          <persistence passivation="true">
-            <file-store preload="true" purge="false"/>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT"/>
       </distributed-cache>
-      <distributed-cache name="capedwarf-tasks" mode="SYNC">
+      <distributed-cache name="capedwarf-tasks">
          <transaction mode="NON_XA"/>
          <persistence passivation="true">
-            <file-store preload="true" purge="false"/>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT" max-count="10000"/>
+         <memory max-count="10000"/>
       </distributed-cache>
-      <replicated-cache name="HibernateSearch-LuceneIndexesMetadata" mode="SYNC">
+      <replicated-cache name="HibernateSearch-LuceneIndexesMetadata">
          <transaction mode="BATCH"/>
          <persistence passivation="true">
-            <file-store preload="true" purge="false"/>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT"/>
+         <memory/>
       </replicated-cache>
-      <replicated-cache name="HibernateSearch-LuceneIndexesData" mode="SYNC">
+      <replicated-cache name="HibernateSearch-LuceneIndexesData">
          <transaction mode="BATCH"/>
          <persistence passivation="true">
-            <file-store preload="true" purge="false"/>
+            <file-store preload="true"/>
          </persistence>
-         <memory storage="OBJECT"/>
+         <memory/>
       </replicated-cache>
-      <replicated-cache name="HibernateSearch-LuceneIndexesLocking" mode="SYNC">
+      <replicated-cache name="HibernateSearch-LuceneIndexesLocking">
          <transaction mode="BATCH"/>
-         <memory storage="OBJECT"/>
+         <memory/>
       </replicated-cache>
       <local-cache name="write-skew">
          <locking isolation="REPEATABLE_READ"/>
@@ -270,26 +250,25 @@
          <memory storage="OFF_HEAP" max-size="10000000" />
       </local-cache>
       <local-cache name="binary-memory">
-         <memory storage="BINARY" max-size="1"/>
+         <encoding media-type="application/x-protostream"/>
+         <memory max-size="1"/>
       </local-cache>
       <local-cache name="object-memory">
-         <memory storage="OBJECT"/>
+         <memory/>
       </local-cache>
       <local-cache name="minimal-offheap">
          <memory storage="OFF_HEAP"/>
       </local-cache>
       <local-cache name="minimal-binary">
-         <memory storage="BINARY"/>
       </local-cache>
       <local-cache name="minimal-object">
-         <memory storage="OBJECT"/>
       </local-cache>
       <local-cache name="heap_object">
          <memory max-count="1000"/>
       </local-cache>
       <local-cache name="heap_binary">
          <encoding media-type="application/x-protostream"/>
-         <memory storage="HEAP" max-size="1.5GB" when-full="REMOVE"/>
+         <memory max-size="1.5GB" when-full="REMOVE"/>
       </local-cache>
       <local-cache name="heap_binary_2">
          <encoding>
@@ -308,67 +287,66 @@
       <!-- template configurations -->
       <local-cache-configuration name="local-template" statistics="true">
          <locking acquire-timeout="30000" concurrency-level="2000" isolation="NONE" striping="true"/>
-         <transaction mode="FULL_XA" stop-timeout="60000" locking="OPTIMISTIC" transaction-manager-lookup="org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup" complete-timeout="34000" reaper-interval="35000" auto-commit="true" />
-         <expiration interval="10000" lifespan="10" max-idle="10"/>
+         <transaction mode="FULL_XA" stop-timeout="60000" transaction-manager-lookup="org.infinispan.transaction.lookup.JBossStandaloneJTAManagerLookup" complete-timeout="34000" reaper-interval="35000" auto-commit="true" />
+         <expiration interval="10000" lifespan="10" max-idle="9"/>
          <persistence passivation="true">
-            <file-store path="quarkus-persistentPath" shared="false" preload="true" purge="false">
+            <file-store path="quarkus-persistentPath" shared="false" preload="true">
                <write-behind modification-queue-size="2048"/>
             </file-store>
          </persistence>
-         <memory storage="OBJECT" max-count="20000"/>
+         <memory max-count="20000"/>
       </local-cache-configuration>
       <local-cache name="local-instance" configuration="local-template">
          <expiration interval="11000"/>
       </local-cache>
 
-      <invalidation-cache-configuration name="invalidation-template" mode="SYNC" statistics="true">
+      <invalidation-cache-configuration name="invalidation-template" statistics="true">
          <locking acquire-timeout="30500" concurrency-level="2500" isolation="READ_UNCOMMITTED" striping="true"/>
-         <transaction mode="BATCH" stop-timeout="60500"  locking="OPTIMISTIC"/>
-         <expiration interval="10500" lifespan="11" max-idle="11"/>
-         <memory storage="OBJECT" max-count="20500"/>
+         <transaction mode="BATCH" stop-timeout="60500"/>
+         <expiration interval="10500" lifespan="11" max-idle="10"/>
+         <memory max-count="20500"/>
       </invalidation-cache-configuration>
       <invalidation-cache name="invalidation-instance" configuration="invalidation-template" />
 
-      <replicated-cache-configuration name="repl-template" mode="SYNC" statistics="true"
-                                      segments="200" consistent-hash-factory="org.infinispan.distribution.ch.impl.SyncConsistentHashFactory"
+      <replicated-cache-configuration name="repl-template" statistics="true"
+                                      segments="200"
                                       key-partitioner="org.infinispan.distribution.ch.impl.HashFunctionPartitioner">
          <locking acquire-timeout="31000" concurrency-level="3000" isolation="SERIALIZABLE" striping="true"/>
          <transaction mode="BATCH" stop-timeout="61000" locking="PESSIMISTIC"/>
-         <expiration interval="11000" lifespan="12" max-idle="12"/>
-         <memory storage="OBJECT" max-count="21000"/>
+         <expiration interval="11000" lifespan="12" max-idle="11"/>
+         <memory max-count="21000"/>
          <state-transfer enabled="false" timeout="60000" chunk-size="10000" />
       </replicated-cache-configuration>
       <replicated-cache name="repl-instance" configuration="repl-template">
          <locking acquire-timeout="32000"/>
       </replicated-cache>
 
-      <distributed-cache-configuration name="dist-template" mode="SYNC" l1-lifespan="1200000" owners="4"
+      <distributed-cache-configuration name="dist-template" l1-lifespan="1200000" owners="4"
                                        remote-timeout="35000" segments="2" statistics="true"
-                                       consistent-hash-factory="org.infinispan.distribution.ch.impl.SyncConsistentHashFactory"
                                        key-partitioner="org.infinispan.distribution.ch.impl.HashFunctionPartitioner">
          <backups>
             <backup site="NYC" failure-policy="WARN" strategy="SYNC" timeout="12500">
                <state-transfer chunk-size="600" timeout="2400000"/>
             </backup>
-            <backup site="SFO" failure-policy="IGNORE" strategy="ASYNC" timeout="13000"/>
+            <backup site="SFO" failure-policy="IGNORE" timeout="13000"/>
             <backup site="LON" failure-policy="FAIL" strategy="SYNC" timeout="13500">
                <take-offline after-failures="3" min-wait="10000"/>
             </backup>
          </backups>
          <backup-for remote-cache="users" remote-site="LON"/>
          <locking acquire-timeout="31500" concurrency-level="3500" isolation="READ_COMMITTED" striping="true"/>
-         <transaction mode="FULL_XA" stop-timeout="61500" locking="OPTIMISTIC"/>
-         <expiration interval="11500" lifespan="13" max-idle="13"/>
-         <memory storage="OBJECT" max-count="21500" when-full="REMOVE"/>
+         <transaction mode="FULL_XA" stop-timeout="61500" />
+         <expiration interval="11500" lifespan="13" max-idle="12"/>
+         <memory max-count="21500" when-full="REMOVE"/>
          <partition-handling when-split="DENY_READ_WRITES" merge-policy="PREFERRED_ALWAYS"/>
          <state-transfer enabled="true" timeout="60500" chunk-size="10500" />
       </distributed-cache-configuration>
       <distributed-cache name="dist-instance" configuration="dist-template" />
       <distributed-cache name="jdbc">
          <persistence>
-            <jdbc:string-keyed-jdbc-store read-only="false" dialect="POSTGRES">
+            <jdbc:string-keyed-jdbc-store dialect="POSTGRES">
                <cdi-data-source/>
-               <jdbc:string-keyed-table create-on-start="true" prefix="ISPN_STRING_TABLE">
+               <jdbc:string-keyed-table prefix="ISPN_STRING_TABLE">
                   <jdbc:id-column name="ID_COLUMN" type="VARCHAR(255)"/>
                   <jdbc:data-column name="DATA_COLUMN" type="BYTEA"/>
                   <jdbc:timestamp-column name="TIMESTAMP_COLUMN" type="BIGINT"/>
@@ -380,7 +358,7 @@
       <distributed-cache name="sql-query">
          <encoding media-type="application/x-protostream"/>
          <persistence>
-            <sql:query-jdbc-store read-only="false" purge="false" dialect="POSTGRES" key-columns="keycolumn">
+            <sql:query-jdbc-store dialect="POSTGRES" key-columns="keycolumn">
                <cdi-data-source/>
                <sql:queries select-all="SELECT keycolumn, value FROM books"
                         select-single="SELECT keycolumn, value FROM books WHERE keycolumn = :keycolumn"
