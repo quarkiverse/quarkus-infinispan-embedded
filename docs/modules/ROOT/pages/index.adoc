@@ -12,8 +12,13 @@ This extension is ideal for developers who want to build high-speed, lightweight
 
 [IMPORTANT]
 ====
-Native support in this extension is limited and not recommended.
-For native applications, consider using Infinispan in Client/Server mode.
+Native support in this extension is limited and not recommended for production use.
+Infinispan 16.0 uses the Foreign Function & Memory (FFM) API for off-heap memory management
+and Lucene uses it for memory-mapped I/O. These FFM-based APIs are not fully compatible
+with GraalVM native image compilation.
+
+For native applications, consider using Infinispan in Client/Server mode with the
+https://quarkus.io/guides/infinispan-client[Quarkus Infinispan Client extension].
 ====
 
 == Quick Overview
@@ -119,6 +124,17 @@ This approach simplifies development by reducing boilerplate, while still suppor
 custom XML-based configurations when needed.
 
 == Embedded Query
+The Infinispan Query module is an optional dependency. If you need to use Infinispan embedded queries,
+add the `infinispan-query` dependency explicitly:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-query</artifactId>
+</dependency>
+----
+
 The Hibernate Search version must match the Infinispan version.
 If necessary, import the Hibernate Search BOM to override the
 Quarkus-provided version.
@@ -133,6 +149,19 @@ Quarkus-provided version.
     <scope>import</scope>
 </dependency>
 ----
+
+[NOTE]
+====
+Making `infinispan-query` optional keeps the extension lightweight for cache-only use cases
+and avoids pulling in Lucene and Hibernate Search when they are not needed.
+====
+
+[WARNING]
+====
+Adding `infinispan-query` is not compatible with GraalVM native image compilation.
+Lucene uses the Foreign Function & Memory (FFM) API which is not supported in native mode.
+If you need native support, use cache-only mode without the query dependency.
+====
 
 == Configuration Settings
 

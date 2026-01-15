@@ -7,7 +7,7 @@ h|[.header-title]##Configuration property##
 h|Type
 h|Default
 
-a| [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config[`quarkus.infinispan-embedded.xml-config`]##
+a| [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config[`+++quarkus.infinispan-embedded.xml-config+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++quarkus.infinispan-embedded.xml-config+++[]
 endif::add-copy-button-to-config-props[]
@@ -28,7 +28,7 @@ endif::add-copy-button-to-env-var[]
 |string
 |
 
-a| [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-clustered]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-clustered[`quarkus.infinispan-embedded.clustered`]##
+a| [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-clustered]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-clustered[`+++quarkus.infinispan-embedded.clustered+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++quarkus.infinispan-embedded.clustered+++[]
 endif::add-copy-button-to-config-props[]
