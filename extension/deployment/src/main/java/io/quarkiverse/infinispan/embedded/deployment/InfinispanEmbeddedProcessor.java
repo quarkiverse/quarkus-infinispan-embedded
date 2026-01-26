@@ -226,9 +226,6 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     void runtime(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInit) {
         runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.jgroups.util.Util"));
-        runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.infinispan.commons.jdkspecific.OffHeapMemory"));
-        runtimeInit.produce(
-                new RuntimeInitializedClassBuildItem("org.infinispan.commons.jdkspecific.UnsafeMemoryAddressOffHeapMemory"));
     }
 
     private void addReflectionForClass(Class<?> classToUse, IndexView indexView,
