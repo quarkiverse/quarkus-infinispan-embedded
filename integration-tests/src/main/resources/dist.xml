@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <infinispan
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="urn:infinispan:config:15.0 https://infinispan.org/schemas/infinispan-config-15.0.xsd
-                          urn:infinispan:config:store:jdbc:15.0 https://infinispan.org/schemas/infinispan-cachestore-jdbc-config-15.0.xsd"
-        xmlns="urn:infinispan:config:15.0"
-        xmlns:ispn="urn:infinispan:config:15.0"
-        xmlns:jdbc="urn:infinispan:config:store:jdbc:15.0" >
+        xsi:schemaLocation="urn:infinispan:config:16.0 https://infinispan.org/schemas/infinispan-config-16.0.xsd
+                          urn:infinispan:config:store:jdbc:16.0 https://infinispan.org/schemas/infinispan-cachestore-jdbc-config-16.0.xsd"
+        xmlns="urn:infinispan:config:16.0"
+        xmlns:ispn="urn:infinispan:config:16.0"
+        xmlns:jdbc="urn:infinispan:config:store:jdbc:16.0" >
     <!-- This is a sample way of setting up a distributed cache in a cluster with native. Note that UDP is not yet
          supported, so we have to use something like TCPPING for discovery -->
    <jgroups>
@@ -18,9 +18,9 @@
    </jgroups>
 
    <cache-container name="test" default-cache="dist">
-       <transport cluster="test" stack="tcpping"/>
+      <transport cluster="test" stack="tcpping"/>
       <distributed-cache name="dist">
-          <memory storage="OBJECT" max-count="21000"/>
+          <memory max-count="21000"/>
       </distributed-cache>
    </cache-container>
 </infinispan>
