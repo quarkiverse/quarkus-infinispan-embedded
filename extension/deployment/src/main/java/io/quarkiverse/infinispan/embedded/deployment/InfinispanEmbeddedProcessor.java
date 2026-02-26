@@ -61,7 +61,7 @@ import io.quarkus.arc.deployment.BeanRegistrationPhaseBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.cache.CompositeCacheKey;
-import io.quarkus.cache.deployment.spi.CacheManagerInfoBuildItem;
+import io.quarkus.cache.deployment.CacheManagerInfoBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
