@@ -7,6 +7,27 @@ h|[.header-title]##Configuration property##
 h|Type
 h|Default
 
+a|icon:lock[title=Fixed at build time] [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-health-enabled]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-health-enabled[`+++quarkus.infinispan-embedded.health-enabled+++`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++quarkus.infinispan-embedded.health-enabled+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+Whether a health check is published in case the smallrye-health extension is present.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_INFINISPAN_EMBEDDED_HEALTH_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_INFINISPAN_EMBEDDED_HEALTH_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--
+|boolean
+|`+++true+++`
+
 a| [[quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config]] [.property-path]##link:#quarkus-infinispan-embedded_quarkus-infinispan-embedded-xml-config[`+++quarkus.infinispan-embedded.xml-config+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++quarkus.infinispan-embedded.xml-config+++[]

@@ -105,6 +105,12 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+            <version>${quarkus.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

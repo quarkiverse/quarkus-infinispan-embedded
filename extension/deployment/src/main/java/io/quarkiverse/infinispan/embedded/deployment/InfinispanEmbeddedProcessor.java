@@ -25,6 +25,7 @@ import org.infinispan.configuration.serializing.ConfigurationSerializer;
 import org.infinispan.factories.impl.ModuleMetadataBuilder;
 import org.infinispan.health.CacheHealth;
 import org.infinispan.health.ClusterHealth;
+import org.infinispan.health.HealthStatus;
 import org.infinispan.interceptors.AsyncInterceptor;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.Listener;
@@ -48,6 +49,7 @@ import org.jboss.jandex.Type;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 
 import io.quarkiverse.infinispan.embedded.Embedded;
+import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedBuildTimeConfig;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -70,6 +72,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
+import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 class InfinispanEmbeddedProcessor {
 
@@ -79,6 +82,13 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    HealthBuildItem addHealthCheck(InfinispanEmbeddedBuildTimeConfig buildTimeConfig) {
+        return new HealthBuildItem(
+                "io.quarkiverse.infinispan.embedded.runtime.health.InfinispanEmbeddedHealthCheck",
+                buildTimeConfig.healthEnabled());
     }
 
     @BuildStep
@@ -113,6 +123,8 @@ class InfinispanEmbeddedProcessor {
 
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(InfinispanEmbeddedProducer.class));
         additionalBeans.produce(AdditionalBeanBuildItem.builder().addBeanClass(Embedded.class).build());
+        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
+                io.quarkiverse.infinispan.embedded.runtime.health.InfinispanEmbeddedHealthCheck.class));
 
         // Infinispan core proto files
         resources.produce(new NativeImageResourceBuildItem("org/infinispan/global.core.proto"));
@@ -219,6 +231,7 @@ class InfinispanEmbeddedProcessor {
 
         addReflectionForClass(CacheHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
         addReflectionForClass(ClusterHealth.class, appOnlyIndex, reflectiveClass, Collections.emptySet());
+        reflectiveClass.produce(ReflectiveClassBuildItem.builder(HealthStatus.class).methods().build());
 
         // Add optional SQL classes. These will only be included if the optional jars are present on the classpath and indexed by Jandex.
         addReflectionForName("org.infinispan.persistence.jdbc.common.configuration.ConnectionFactoryConfiguration", true,

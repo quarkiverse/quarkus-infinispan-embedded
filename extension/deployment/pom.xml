@@ -41,6 +41,12 @@
             <artifactId>quarkus-infinispan-embedded</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health-deployment</artifactId>
+            <version>${quarkus.version}</version>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>org.assertj</groupId>

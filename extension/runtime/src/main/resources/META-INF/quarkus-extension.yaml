@@ -13,3 +13,5 @@ metadata:
   guide: "https://docs.quarkiverse.io/quarkus-infinispan-embedded/dev/"
   config:
   - "quarkus.infinispan-embedded."
+  capability:
+  - "io.quarkus.smallrye.health"
