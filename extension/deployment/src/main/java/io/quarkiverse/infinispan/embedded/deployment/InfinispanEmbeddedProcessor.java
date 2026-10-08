@@ -49,7 +49,6 @@ import org.jboss.jandex.Type;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 
 import io.quarkiverse.infinispan.embedded.Embedded;
-import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedBuildTimeConfig;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanEmbeddedProducer;
 import io.quarkiverse.infinispan.embedded.runtime.InfinispanRecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -60,6 +59,8 @@ import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.cache.CompositeCacheKey;
 import io.quarkus.cache.deployment.CacheManagerInfoBuildItem;
+import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -72,7 +73,6 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
-import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 class InfinispanEmbeddedProcessor {
 
@@ -82,13 +82,6 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
-    }
-
-    @BuildStep
-    HealthBuildItem addHealthCheck(InfinispanEmbeddedBuildTimeConfig buildTimeConfig) {
-        return new HealthBuildItem(
-                "io.quarkiverse.infinispan.embedded.runtime.health.InfinispanEmbeddedHealthCheck",
-                buildTimeConfig.healthEnabled());
     }
 
     @BuildStep
@@ -119,12 +112,17 @@ class InfinispanEmbeddedProcessor {
             BuildProducer<ServiceProviderBuildItem> serviceProvider, BuildProducer<AdditionalBeanBuildItem> additionalBeans,
             BuildProducer<NativeImageResourceBuildItem> resources, CombinedIndexBuildItem combinedIndexBuildItem,
             List<InfinispanReflectionExcludedBuildItem> excludedReflectionClasses,
-            ApplicationIndexBuildItem applicationIndexBuildItem) {
+            ApplicationIndexBuildItem applicationIndexBuildItem,
+            Capabilities capabilities) {
 
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(InfinispanEmbeddedProducer.class));
         additionalBeans.produce(AdditionalBeanBuildItem.builder().addBeanClass(Embedded.class).build());
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(
-                io.quarkiverse.infinispan.embedded.runtime.health.InfinispanEmbeddedHealthCheck.class));
+        if (capabilities.isPresent(Capability.SMALLRYE_HEALTH)) {
+            additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                    .addBeanClass("io.quarkiverse.infinispan.embedded.runtime.health.InfinispanEmbeddedHealthCheck")
+                    .setUnremovable()
+                    .build());
+        }
 
         // Infinispan core proto files
         resources.produce(new NativeImageResourceBuildItem("org/infinispan/global.core.proto"));
