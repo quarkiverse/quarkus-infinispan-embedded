@@ -29,7 +29,7 @@
         <jgroups.raft.version>1.0.14.Final</jgroups.raft.version>
         <assertj.version>3.26.3</assertj.version>
         <quarkus-build-reporter.version>3.13.1</quarkus-build-reporter.version>
-        <quarkus-micrometer-registry-prometheus-v1.version>3.7.0</quarkus-micrometer-registry-prometheus-v1.version>
+
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
     </properties>
     <licenses>

@@ -161,9 +161,6 @@
             <properties>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
                 <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
-                <!-- Native ITs are skipped: Infinispan 16.0 off-heap memory uses FFM APIs
-                     that are not compatible with GraalVM native mode. -->
-                <skipITs>true</skipITs>
             </properties>
         </profile>
     </profiles>
