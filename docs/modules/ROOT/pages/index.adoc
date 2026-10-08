@@ -10,15 +10,10 @@ The new *Infinispan Embedded Quarkus extension* simplifies using Infinispan as a
 
 This extension is ideal for developers who want to build high-speed, lightweight applications without the overhead of managing external data services.
 
-[IMPORTANT]
+[NOTE]
 ====
-Native support in this extension is limited and not recommended for production use.
-Infinispan 16.0 uses the Foreign Function & Memory (FFM) API for off-heap memory management
-and Lucene uses it for memory-mapped I/O. These FFM-based APIs are not fully compatible
-with GraalVM native image compilation.
-
-For native applications, consider using Infinispan in Client/Server mode with the
-https://quarkus.io/guides/infinispan-client[Quarkus Infinispan Client extension].
+GraalVM native image compilation is supported for cache-only use cases (without `infinispan-query`).
+See the <<native-build>> section for details and limitations.
 ====
 
 == Quick Overview
@@ -162,6 +157,77 @@ Adding `infinispan-query` is not compatible with GraalVM native image compilatio
 Lucene uses the Foreign Function & Memory (FFM) API which is not supported in native mode.
 If you need native support, use cache-only mode without the query dependency.
 ====
+
+== Metrics with Prometheus
+
+Prometheus metrics support is optional. If you want to expose Infinispan metrics via Prometheus,
+add the following dependencies to your project:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+----
+
+Infinispan 16.0 uses the new `io.micrometer.prometheusmetrics` package. The `micrometer-registry-prometheus`
+artifact provides this package and is required in addition to the Quarkus micrometer extension.
+
+[NOTE]
+====
+Without these dependencies, metrics collection is disabled. The extension works
+correctly in both JVM and native mode without metrics.
+====
+
+== Health Check
+
+The extension provides an optional SmallRye Health integration. When `quarkus-smallrye-health` is on
+the classpath, a readiness health check is automatically registered that reports the status of the
+embedded cache manager.
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-health</artifactId>
+</dependency>
+----
+
+[[native-build]]
+== Native Build
+
+GraalVM native image compilation is supported for cache-only use cases.
+
+=== Supported
+
+* Embedded caching (local and clustered)
+* Caching annotations (`@CacheResult`, `@CacheInvalidate`, etc.)
+* Protobuf serialization
+* JDBC cache stores
+* Health checks
+* Prometheus metrics (when metrics dependencies are added)
+
+=== Not supported in native mode
+
+* `infinispan-query` — Lucene uses the Foreign Function & Memory (FFM) API which is not compatible
+  with GraalVM native image compilation. If you need native support, use cache-only mode without
+  the query dependency.
+
+=== Native without metrics
+
+The extension works in native mode without Prometheus metrics dependencies. When the Prometheus
+client is not on the classpath, the Infinispan metrics components are automatically excluded from
+the native image.
+
+=== Native with metrics
+
+To use Prometheus metrics in a native build, both micrometer dependencies must be present
+(see <<Metrics with Prometheus>>).
 
 == Configuration Settings
 

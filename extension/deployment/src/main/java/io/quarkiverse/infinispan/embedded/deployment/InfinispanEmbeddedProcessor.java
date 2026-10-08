@@ -262,6 +262,8 @@ class InfinispanEmbeddedProcessor {
     @BuildStep
     void runtime(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInit) {
         runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.jgroups.util.Util"));
+        runtimeInit.produce(
+                new RuntimeInitializedClassBuildItem("org.infinispan.metrics.impl.PrometheusRegistry"));
         // Lucene FFM (Foreign Function & Memory) classes need runtime init when query is on the classpath
         if (isQueryAvailable()) {
             runtimeInit.produce(new RuntimeInitializedClassBuildItem("org.apache.lucene.store.MMapDirectory"));
